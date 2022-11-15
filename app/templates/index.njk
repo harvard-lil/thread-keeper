@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>archive.social</title>
+    <meta name="description" content="">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="/static/index.css">
+    <script type="module" src="/static/index.js"></script>
+  </head>
+
+  <body id="index">
+    <main>
+
+      <!-- HEADER -->
+      <img 
+        src="/static/ocean-of-books.svg" 
+        alt="Illustration of a person falling in an ocean of books.">
+
+      <header>
+        <h1>archive.social</h1>
+        <p>High-fidelity capture of Twitter threads as sealed PDFs.</p>
+      </header>
+
+      <!-- MAIN FORM -->
+      <form action="/" target="_blank" method="POST" enctype="application/x-www-form-urlencoded">
+
+        <fieldset>
+          <label for="url">Twitter.com url to capture</label>
+          <input type="url" 
+                 pattern="https://twitter.com/.*" 
+                 id="url" 
+                 name="url" 
+                 placeholder="https://twitter.com/..."
+                 required>
+        </fieldset>
+
+        <fieldset>
+          <label for="access-key">Archive.social access key</label>
+          <input type="password" 
+                 name="access-key" 
+                 id="access-key"
+                 required>
+        </fieldset>
+          
+        <fieldset class="submit">
+          <a href="" target="_blank" rel="noreferer">Request an access key.</a>
+          <button>Capture</button>
+        </fieldset>
+
+      </form>
+
+      {% if error %}
+      <!-- ERROR DIALOG -->
+      <dialog id="form-error">
+        <h2>Something went wrong</h2>
+
+        {% if errorReason and errorReason == "ACCESS-KEY" %}
+        <p>The access key provided is invalid or no longer active.</p>
+        {% endif %}
+
+        {% if errorReason and errorReason == "URL" %}
+        <p>The url provided is not a valid twitter.com url.</p>
+        {% endif %}
+
+        {% if errorReason and errorReason == "TOO-MANY-CAPTURES-TOTAL" %}
+        <p>archive.social has received too many requests. Please retry in a minute.</p>
+        {% endif %}
+
+        {% if errorReason and errorReason == "TOO-MANY-CAPTURES-USER" %}
+        <p>Please wait until the capture requests you've started are completed before starting a new one.</p>
+        {% endif %}
+
+        {% if errorReason and errorReason == "CAPTURE-ISSUE" %}
+        <p>archive.social encountered an issue during the capture process itself. Please try again later.</p>
+        {% endif %}
+
+        <button>Ok</button>
+      </dialog>
+      {% endif %}
+
+      <!-- FORM SUBMIT DIALOG -->
+      <dialog id="form-submit">
+        <h2>Request a capture.</h2>
+
+        <p>Submitting this form will open a new tab, in which your request will be processed.</p>
+
+        <p>The capture process should take around a minute, at the end of which the resulting sealed PDF will be ready to be downloaded.</p>
+
+        <button>I understand, proceed.</button>
+      </dialog>
+
+      <!-- EXPLAINER -->
+      <section>
+        <h2>How does it work?</h2>
+
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.</p>
+        
+        <p>Quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+
+        <p><a href="/static/example.pdf">See an example</a>.</p>
+      </section>
+
+      <!-- FOOTER -->
+      <footer>
+        <p>
+          <a href="https://lil.law.harvard.edu">
+            <img src="/static/lil.svg" alt="Harvard Library Innovation Lab - Logo">
+          </a>
+        </p>
+        
+        <p>archive.social is an experiment of the <a href="https://lil.law.harvard.edu">Harvard Library Innovation Lab</a>.</p>
+      </footer>
+
+    </main>
+  </body>
+</html>

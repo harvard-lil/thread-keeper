@@ -1,0 +1,255 @@
+* {
+  padding: 0px;
+  margin: 0px;
+  box-sizing: border-box;
+}
+
+:root {
+  --main-color: rgb(29, 29, 29);
+  --main-color-: rgb(57, 57, 57);
+  --main-color--: rgb(70, 70, 70);
+  --main-color---: rgb(100, 100, 100);
+  --main-color----: rgb(125, 125, 125);
+  --main-color-----: rgb(150, 150, 150);
+  
+  --opposite-color: rgb(245, 245, 245);
+  --opposite-color-: rgb(225, 225, 225);
+  --opposite-color--: rgb(205, 205, 205);
+
+  --special-color: rgb(2, 56, 17);
+  --special-color-: rgb(2, 43, 13);
+}
+
+html {
+  font-size: 20px;
+  font-size: clamp(18px, 1.35vmax, 32px);
+}
+
+body {
+  font-family: Garamond, serif;
+  font-size: 1rem;
+
+  background-color: var(--main-color);
+  color: var(--main-color);
+
+  padding: 0.5rem;
+}
+
+a {
+  color: var(--special-color);
+}
+
+a:hover {
+  color: var(--special-color-);
+  text-decoration: none;
+}
+
+body > main {
+  padding: 1rem;
+  background-color: var(--opposite-color);
+}
+
+@media (max-width: 769px) {
+  body > main {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+body > main h1 {
+  font-size: 2.85rem;
+  letter-spacing: -0.1rem;
+  text-align: center;
+}
+
+@media (max-width: 769px) {
+  body > main h1 {
+    font-size: 2.45rem;
+  }
+}
+
+body > main h2 {
+  font-size: 1.65rem;
+  letter-spacing: -0.05rem;
+}
+
+@media (max-width: 769px) {
+  body > main h2 {
+    font-size: 1.55rem;
+  }
+}
+
+body > main h1, h2, h3 {
+  font-weight: normal;
+  margin-bottom: 0.25rem;
+}
+
+body > main p {
+  line-height: 1.45rem;
+}
+
+/* INDEX - GENERAL*/
+body#index > main {
+  min-height: 100vh;
+}
+
+body#index > main button {
+  font-family: Garamond, serif;
+  font-size: 0.85rem;
+  border: 0px;
+  background-color: var(--main-color);
+  color: var(--opposite-color);
+  padding: 0.5rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: background-color 0.35s ease-in-out;
+}
+
+body#index > main button:hover {
+  background-color: var(--main-color-);
+}
+
+/* INDEX - HEADER */
+body#index > main > img:first-of-type {
+  display: block;
+  margin: auto;
+  margin-bottom: 1rem;
+  max-width: 60vw;
+  max-height: 62.5vh;
+}
+
+body#index > main header {
+  text-align: center;
+}
+
+/* INDEX - FORM */
+body#index > main form {
+  max-width: 45ch;
+  display: block;
+  margin: auto;
+  border-top: 1px solid var(--main-color-----);
+  /*border-bottom: 1px solid var(--main-color-----);*/
+  padding-top: 1.5rem;
+  margin-bottom: 1rem;
+  margin-top: 1.5rem;
+}
+
+@media (max-width: 769px) {
+  body#index > main form {
+    max-width: unset;
+  }
+}
+
+body#index > main form fieldset {
+  border: 0px;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  width: 100%;
+}
+
+body#index > main form label {
+  display: block;
+  font-size: 0.95rem;
+  color: var(--main-color);
+  padding-bottom: 0.25rem;
+}
+
+body#index > main form input {
+  display: block;
+  width: 100%;
+  padding: 0.5rem;
+
+  font-family: Garamond, serif;
+  font-size: 1rem;
+
+  background-color: white;
+  border: 1px solid var(--main-color-----);
+  border-radius: 0.25rem;
+}
+
+body#index > main form fieldset.submit {
+  text-align: right;
+}
+
+body#index > main form fieldset.submit a {
+  font-size: 0.85rem;
+  display: inline-block;
+  padding: 0.5rem;
+}
+
+/* INDEX - DIALOG */
+body#index > main dialog {
+  display: none;
+}
+
+body#index > main dialog[open] {
+  display: unset;
+  margin: auto;
+  border: 0px;
+  width: 50ch;
+  max-width: 90%;
+  padding: 2rem;
+  border: 0.5rem solid var(--main-color);
+}
+
+body#index > main dialog[open] p {
+  font-size: 0.9rem;
+  line-height: 1.45rem;
+  margin-bottom: 1rem;
+}
+
+body#index > main dialog[open]::backdrop {
+  background-color: rgba(0,0,0,0.65);
+  overflow: hidden;
+}
+
+/* INDEX - EXPLAINER */
+body#index > main section {
+  max-width: 45ch;
+  margin: auto;
+  padding-top: 1.5rem;
+  margin-bottom: 1.5rem;
+  border-top: 1px solid var(--main-color-----);
+}
+
+
+body#index > main section p {
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+  line-height: 1.45rem;
+}
+
+@media (max-width: 769px) {
+  body#index > main section {
+    max-width: unset;
+  }
+}
+
+/* INDEX - FOOTER */
+body#index > main footer {
+  max-width: 45ch;
+  margin: auto;
+  text-align: center;
+  padding-top: 1.5rem;
+  margin-bottom: 1.5rem;
+  border-top: 1px solid var(--main-color-----);
+}
+
+body#index > main footer p {
+  margin-bottom: 0.5rem;
+  /*font-size: 0.95rem;*/
+}
+
+@media (max-width: 769px) {
+  body#index > main footer {
+    max-width: unset;
+  }
+}
+
+body#index > main footer img {
+  width: 10rem;
+  display: inline-block;
+  max-width: 50%;
+}

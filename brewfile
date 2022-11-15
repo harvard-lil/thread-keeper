@@ -1,0 +1,5 @@
+# For use on Mac OS for development purposes only.
+brew "curl"
+brew "openssl"
+brew "ghostscript"
+brew "poppler"

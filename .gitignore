@@ -1,0 +1,10 @@
+node_modules
+*.p12
+*.pem
+test.js
+.DS_Store
+app/data/*.json
+app/data/*.tsv
+yt-dlp
+app/tmp/*.pdf
+app/tmp/*.mp4
