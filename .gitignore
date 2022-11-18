@@ -8,3 +8,4 @@ app/data/*.tsv
 yt-dlp
 app/tmp/*.pdf
 app/tmp/*.mp4
+public-keys.txt
