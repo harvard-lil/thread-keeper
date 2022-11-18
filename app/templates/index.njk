@@ -46,7 +46,7 @@
         </fieldset>
           
         <fieldset class="submit">
-          <a href="" target="_blank" rel="noreferer">Request an access key.</a>
+          <a href="https://docs.google.com/forms/d/11pVfBReAHmHGmtzKrQ4XqrvOMBr4BI4bX-hDdsn0OuQ/" target="_blank" rel="noreferer">Request an access key.</a>
           <button>Capture</button>
         </fieldset>
 
@@ -94,16 +94,43 @@
 
       <!-- EXPLAINER -->
       <section>
-        <h2>How does it work?</h2>
+        <h2>What is this?</h2>
 
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.</p>
-        
-        <p>Quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+        <p><a href="https://archive.social">Archive.social</a> is an experiment by the <a href="https://lil.law.harvard.edu">Harvard Library Innovation Lab</a> to let you download signed PDFs of Twitter URLs. <a href="/static/example.pdf">Here's an example PDF</a> we made from <a href="https://twitter.com/dog_rates/status/1593441021060206594">https://twitter.com/dog_rates/status/1593441021060206594</a>.</p>
 
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.</p>
-        
-        <p><a href="/static/example.pdf">See an example</a>.</p>
-        <p><a href="/static/public-keys.txt">Public keys we've used for signing</a>.</p>
+        <h2>Who can use it?</h2>
+
+        <p>To use our website <a href="https://docs.google.com/forms/d/11pVfBReAHmHGmtzKrQ4XqrvOMBr4BI4bX-hDdsn0OuQ/">you'll need to contact us</a> for an API key. We're currently only able to share a limited number with people like journalists, internet scholars, and archivists. But you can also use our open source software (coming soon!) to stand up an archive server of your own, and share it with your friends.</p>
+
+        <h2>Why make a PDF archiving tool for Twitter?</h2>
+
+        <p>There are lots of screenshots of Twitter threads going around. Some are real, some are fake. You can't tell who made them, or when they were made.</p>
+
+        <p>PDFs let us apply document signatures and timestamps so anyone can check, in the future, that a PDF you download with "archive.social" really came from the Harvard Library Innovation Lab and hasn't been edited. PDFs also let us bundle in additional media as attachments. Each signed PDF currently includes all images in the page (so you can see full size images that are cropped in the PDF view) and the primary video on the page if any.</p>
+
+        <h2>Why <em>not</em> make a PDF archiving tool for Twitter?</h2>
+
+        <p>Not everything on Twitter wants to be archived! On Twitter all kinds of conversations happen at different levels of privacy in the same public space. Some tweets want to be quiet; some want to be forgotten; some are by public figures or have public impact or sentimental value and want to be kept around. Please think carefully about what you choose to preserve.</p>
+
+        <p>Library nerd note: societies create much more data than they can save. "Thinking carefully about what you choose to preserve" is part of the practice of archiving. By doing it, you're helping to form our shared cultural memory.</p>
+
+        <h2>How do you make these PDFs (and why does it take so long)?</h2>
+
+        <p>Twitter captures are made using open source web archiving software we're developing at the Library Innovation Lab for eventual use in our <a href="https://perma.cc">Perma.cc project</a>. The software uses a headless Chrome browser to render the page as it would appear to a reader. For this experiment, we're also running custom javascript in the headless browser to remove Twitter UI and make the content easier to read.</p>
+
+        <p>Captures can take as long as a minute, because we scroll to load resources from the entire Twitter thread.</p>
+
+        <h2>How do I check that a PDF came from you?</h2>
+
+        <p>You can download <a href="https://crt.sh/?q=lil.law.harvard.edu">this public key file</a> and add it to Adobe Acrobat. We'll also add a page on our site shortly where you can upload a PDF and we'll confirm whether it really came from us.</p>
+
+        <p>Tech nerd note: As an extra check, the key you're downloading here happens to be one that we also verified via LetsEncrypt as belonging to our Harvard domain, lil.law.harvard.edu. You can see the same key in <a href="https://crt.sh/?q=lil.law.harvard.edu">the certificate transparency logs</a>.</p>
+
+        <h2>Does a signature on a PDF web archive mean it's real?</h2>
+
+        <p>Well … no. Library folks like to talk about "authenticity" and "provenance". A signature on a PDF tells you its <em>provenance</em>: you can prove that you really got the PDF from us, and that we couldn't have created it after a certain date. You'll then have to decide whether you trust our claim that the PDF we gave you represents a real page we saw on Twitter (and that no one else has messed with our servers). If someone else gives you a signed PDF, they're giving you a different provenance chain, and you can trace that back to decide who you're being asked to trust.</p>
+
+        <p>Tech nerd note: This whole trust step is needed because of something called <em>repudiability</em>: https web transactions are deliberately designed to be repudiable, meaning there's no way to tell as a third party after the fact whether they ever really happened. Signed HTTP exchanges are one proposal that may eventually let websites choose to publish verifiable content instead, but they aren't here yet. So for now, you're left deciding whether "archive.social" is an intermediary you want to choose to trust.</p>
       </section>
 
       <!-- FOOTER -->

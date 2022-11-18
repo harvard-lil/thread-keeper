@@ -14,8 +14,7 @@ export const CERTS_PATH = process.env.CERTS_PATH ? process.env.CERTS_PATH : `${p
 /**
  * Path to the "data" folder.
  */
- export const DATA_PATH = process.env.DATA_PATH ? process.env.DATA_PATH : `${process.env.PWD}/app/data/`;
-
+export const DATA_PATH = process.env.DATA_PATH ? process.env.DATA_PATH : `${process.env.PWD}/app/data/`;
 
 /**
  * Path to the folder in which temporary files will be written by the app.

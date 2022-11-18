@@ -5,7 +5,7 @@
   "main": "app.js",
   "type": "module",
   "scripts": {
-    "start": "fastify start app/server.js",
+    "start": "fastify start app/server.js -l warn",
     "dev": "fastify start app/server.js -l info -w",
     "postinstall": "cd scripts && bash download-yt-dlp.sh && bash pip-install.sh",
     "generate-local-cert": "cd scripts && bash generate-local-cert.sh",
