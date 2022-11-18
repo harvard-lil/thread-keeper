@@ -43,7 +43,7 @@ export class TwitterCapture {
     ytDlpPath: `${EXECUTABLES_FOLDER}yt-dlp`,
     timestampServerUrl: "http://timestamp.digicert.com",
     networkidleTimeout: 5000,
-    browserBehaviorsTimeout: 25000,
+    browserBehaviorsTimeout: 30000,
     videoCaptureTimeout: 10000,
     renderTimeout: 2500
   };
