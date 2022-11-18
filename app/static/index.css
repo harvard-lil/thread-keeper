@@ -232,7 +232,7 @@ body#index > main footer {
   max-width: 45ch;
   margin: auto;
   text-align: center;
-  padding-top: 1.5rem;
+  padding-top: 2rem;
   margin-bottom: 1.5rem;
   border-top: 1px solid var(--main-color-----);
 }
