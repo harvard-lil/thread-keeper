@@ -43,9 +43,9 @@ export class TwitterCapture {
     ytDlpPath: `${EXECUTABLES_FOLDER}yt-dlp`,
     timestampServerUrl: "http://timestamp.digicert.com",
     networkidleTimeout: 5000,
-    browserBehaviorsTimeout: 35000,
+    browserBehaviorsTimeout: 33500,
     videoCaptureTimeout: 10000,
-    renderTimeout: 5000
+    renderTimeout: 4000
   };
 
   /** @type {object} - Based on TwitterCapture.defaults */
@@ -418,7 +418,7 @@ export class TwitterCapture {
         filename = filename.substring(1);
       }
   
-      await editablePDF.attach(buffer, filename, {
+      await editablePDF.attach(buffer.buffer, filename, {
         mimeType: 'image/jpeg',
         description: `Image captured from ${this.url}`,
         creationDate: new Date(),
@@ -482,7 +482,7 @@ export class TwitterCapture {
         return;
       }
   
-      await editablePDF.attach(video, "video.mp4", {
+      await editablePDF.attach(video.buffer, "video.mp4", {
         mimeType: 'video/mp4',
         description: `Video captured from ${this.url}`,
         creationDate: new Date(),
