@@ -185,7 +185,7 @@ export class TwitterCapture {
       headless: true,
       channel: "chrome",
     });
-    this.playwright.context = await this.playwright.browser.newContext({ userAgent, serviceWorkers: "block" });
+    this.playwright.context = await this.playwright.browser.newContext({ userAgent });
     this.playwright.page = await this.playwright.context.newPage();
 
     this.playwright.page.setViewportSize(viewport);
@@ -205,7 +205,6 @@ export class TwitterCapture {
     await this.playwright.browser.close();
     this.playwright.ready = true;
   }
-
 
   /**
    * Adjusts the current page's DOM so the resulting PDF is not affected by UI artifact.

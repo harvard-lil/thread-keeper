@@ -131,6 +131,11 @@
         <p>Well … no. Library folks like to talk about "authenticity" and "provenance". A signature on a PDF tells you its <em>provenance</em>: you can prove that you really got the PDF from us, and that we couldn't have created it after a certain date. You'll then have to decide whether you trust our claim that the PDF we gave you represents a real page we saw on Twitter (and that no one else has messed with our servers). If someone else gives you a signed PDF, they're giving you a different provenance chain, and you can trace that back to decide who you're being asked to trust.</p>
 
         <p>Tech nerd note: This whole trust step is needed because of something called <em>repudiability</em>: https web transactions are deliberately designed to be repudiable, meaning there's no way to tell as a third party after the fact whether they ever really happened. Signed HTTP exchanges are one proposal that may eventually let websites choose to publish verifiable content instead, but they aren't here yet. So for now, you're left deciding whether "archive.social" is an intermediary you want to choose to trust.</p>
+
+        <h2>What is your privacy policy?</h2>
+
+        <p>We do not log individual Twitter URLs captured, and we do not store PDF files after delivering them to you. We do log cryptographic hashes of all PDF files delivered, in case there is a later question of authenticity. We also store normal server request logs.</p>
+
       </section>
 
       <!-- FOOTER -->
