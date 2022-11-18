@@ -170,6 +170,7 @@ export default async function (fastify, opts) {
       return reply
         .code(200)
         .header('Content-Type', 'application/pdf')
+        .header('Content-Disposition', 'attachment; filename="capture.pdf"')
         .send(pdf);
     }
     catch(err) {

@@ -45,7 +45,7 @@ export class TwitterCapture {
     networkidleTimeout: 5000,
     browserBehaviorsTimeout: 35000,
     videoCaptureTimeout: 10000,
-    renderTimeout: 3000
+    renderTimeout: 5000
   };
 
   /** @type {object} - Based on TwitterCapture.defaults */
