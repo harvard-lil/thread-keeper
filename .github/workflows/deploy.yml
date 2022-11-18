@@ -1,0 +1,21 @@
+name: Tests
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    # don't run on pushes to forks
+    if: github.repository == 'harvard-lil/archive.social'
+    steps:
+      - name: Deploy
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+          DEPLOY_URL: ${{ secrets.DEPLOY_URL }}
+          DEPLOY_HEADER: ${{ secrets.DEPLOY_HEADER }}
+        run: |
+          set -x
+          export DEPLOY_CONTENT='{"GITHUB_RUN_NUMBER":"'$GITHUB_RUN_NUMBER'","GITHUB_SHA":"'$GITHUB_SHA'","GITHUB_REF":"'$GITHUB_REF'","GITHUB_REPOSITORY":"'$GITHUB_REPOSITORY'","GITHUB_ACTOR":"'$GITHUB_ACTOR'"}' ;
+          export DEPLOY_SIG="sha1=`echo -n "$DEPLOY_CONTENT" | openssl sha1 -hmac $DEPLOY_KEY | sed 's/^.* //'`" ;
+          curl -X POST "$DEPLOY_URL" --data "$DEPLOY_CONTENT" -H "Content-Type: application/json" -H "$DEPLOY_HEADER: $DEPLOY_SIG"
