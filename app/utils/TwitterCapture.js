@@ -146,7 +146,7 @@ export class TwitterCapture {
       editablePDF.removePage(1);
     }
     catch {
-      console.log(err);
+      //console.log(err);
     }
 
     // Try to capture video, if any, and add it as attachment
@@ -189,6 +189,8 @@ export class TwitterCapture {
     this.playwright.page = await this.playwright.context.newPage();
 
     this.playwright.page.setViewportSize(viewport);
+
+    await new Promise(resolve => setTimeout(resolve, 500)); // [Debug]
     this.playwright.page.on("response", this.interceptJpegs);
 
     this.playwright.ready = true;
