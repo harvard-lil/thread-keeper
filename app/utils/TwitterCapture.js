@@ -43,9 +43,9 @@ export class TwitterCapture {
     ytDlpPath: `${EXECUTABLES_FOLDER}yt-dlp`,
     timestampServerUrl: "http://timestamp.digicert.com",
     networkidleTimeout: 5000,
-    browserBehaviorsTimeout: 30000,
+    browserBehaviorsTimeout: 35000,
     videoCaptureTimeout: 10000,
-    renderTimeout: 2500
+    renderTimeout: 3000
   };
 
   /** @type {object} - Based on TwitterCapture.defaults */
@@ -150,7 +150,7 @@ export class TwitterCapture {
     }
 
     // Try to capture video, if any, and add it as attachment
-    //await this.captureAndAddVideoToPDF(editablePDF);
+    await this.captureAndAddVideoToPDF(editablePDF);
 
     // Freeze edited PDF in memory
     editedPDF = await editablePDF.save();
