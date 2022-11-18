@@ -150,7 +150,7 @@ export class TwitterCapture {
     }
 
     // Try to capture video, if any, and add it as attachment
-    await this.captureAndAddVideoToPDF(editablePDF);
+    //await this.captureAndAddVideoToPDF(editablePDF);
 
     // Freeze edited PDF in memory
     editedPDF = await editablePDF.save();
