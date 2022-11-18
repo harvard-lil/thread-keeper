@@ -68,18 +68,6 @@ export default async function (fastify, opts) {
       .send(html);
   });
 
-  fastify.get('/test', async (request, reply) => {
-    const html = nunjucks.render(`${TEMPLATES_PATH}success.njk`, {
-      pdfBase64: fs.readFileSync("download.pdf").toString("base64"),
-      url: "https://twitter.com/doctorow/status/1591759999323492358"
-    });
-
-    return reply
-      .code(200)
-      .header('Content-Type', 'text/html; charset=utf-8')
-      .send(html);
-  });
-
   /**
    * [POST] /
    * Processes a request to capture a twitter url. 
