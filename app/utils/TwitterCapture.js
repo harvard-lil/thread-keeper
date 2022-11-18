@@ -385,9 +385,9 @@ export class TwitterCapture {
       throw new Error("Playwright is not ready.");
     }
 
-    // Scroll up and wait ~2s
+    // Scroll up
     await this.playwright.page.evaluate(() => window.scrollTo({top: 0}));
-    await new Promise(resolve => setTimeout(resolve, this.options.renderTimeout));
+    //await new Promise(resolve => setTimeout(resolve, this.options.renderTimeout));
 
     // Generate document
     await this.playwright.page.emulateMedia({media: 'screen'});

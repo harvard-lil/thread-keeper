@@ -106,7 +106,7 @@
 
         <p>There are lots of screenshots of Twitter threads going around. Some are real, some are fake. You can't tell who made them, or when they were made.</p>
 
-        <p>PDFs let us apply document signatures and timestamps so anyone can check, in the future, that a PDF you download with "archive.social" really came from the Harvard Library Innovation Lab and hasn't been edited. PDFs also let us bundle in additional media as attachments. Each signed PDF currently includes all images in the page (so you can see full size images that are cropped in the PDF view) and the primary video on the page if any.</p>
+        <p>PDFs let us apply document signatures and timestamps so anyone can check, in the future, that a PDF you download with "archive.social" really came from the Harvard Library Innovation Lab and hasn't been edited. PDFs also let us bundle in additional media as attachments. Coming soon pending a bug fix: Each signed PDF will include all images in the page (so you can see full size images that are cropped in the PDF view) and the primary video on the page if any.</p>
 
         <h2>Why <em>not</em> make a PDF archiving tool for Twitter?</h2>
 
@@ -119,6 +119,10 @@
         <p>Twitter captures are made using open source web archiving software we're developing at the Library Innovation Lab for eventual use in our <a href="https://perma.cc">Perma.cc project</a>. The software uses a headless Chrome browser to render the page as it would appear to a reader. For this experiment, we're also running custom javascript in the headless browser to remove Twitter UI and make the content easier to read.</p>
 
         <p>Captures can take as long as a minute, because we scroll to load resources from the entire Twitter thread.</p>
+
+        <h2>Why didn't my requested URL capture correctly?</h2>
+        
+        <p>If a page fails to capture correctly after a few attempts, let us know. Also note that some PDF viewers will truncate very large PDFs, so you may need to try a different viewer if the top and bottom are hidden.</p>
 
         <h2>How do I check that a PDF came from you?</h2>
 
@@ -134,8 +138,8 @@
 
         <h2>What is your privacy policy?</h2>
 
-        <p>We do not log individual Twitter URLs captured, and we do not store PDF files after delivering them to you. We do log cryptographic hashes of all PDF files delivered, in case there is a later question of authenticity. We also store normal server request logs.</p>
-
+        <p>We may log requested Twitter URLs and may store cached copies of delivered archives. We also log cryptographic hashes of all PDF files delivered, in case there is a later question of authenticity. We store normal server request logs.</p>
+         
       </section>
 
       <!-- FOOTER -->
