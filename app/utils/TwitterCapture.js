@@ -478,6 +478,10 @@ export class TwitterCapture {
       }
   
       const video = fs.readFileSync(filepathOut);
+
+      if (!video) {
+        return;
+      }
   
       await editablePDF.attach(video, "video.mp4", {
         mimeType: 'video/mp4',
