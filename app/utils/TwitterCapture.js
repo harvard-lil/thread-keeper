@@ -185,7 +185,7 @@ export class TwitterCapture {
       headless: true,
       channel: "chrome",
     });
-    this.playwright.context = await this.playwright.browser.newContext({ userAgent });
+    this.playwright.context = await this.playwright.browser.newContext({ userAgent, serviceWorkers: "block" });
     this.playwright.page = await this.playwright.context.newPage();
 
     this.playwright.page.setViewportSize(viewport);
