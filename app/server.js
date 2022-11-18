@@ -167,15 +167,10 @@ export default async function (fastify, opts) {
 
       SuccessLog.add(accessKey, pdf);
 
-      const html = nunjucks.render(`${TEMPLATES_PATH}success.njk`, {
-        pdfBase64: pdf.toString('base64'),
-        url: tweets.url
-      });
-
       return reply
         .code(200)
-        .header('Content-Type', 'text/html; charset=utf-8')
-        .send(html);
+        .header('Content-Type', 'application/pdf')
+        .send(pdf);
     }
     catch(err) {
       request.log.error(`Capture failed. ${err}`);
