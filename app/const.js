@@ -9,18 +9,19 @@
  * Path to the folder holding the certificates used for signing the PDFs.
  * @constant
  */
-export const CERTS_PATH = `${process.env.PWD}/certs/`;
+export const CERTS_PATH = process.env.CERTS_PATH ? process.env.CERTS_PATH : `${process.env.PWD}/certs/`;
+
+/**
+ * Path to the "data" folder.
+ */
+ export const DATA_PATH = process.env.DATA_PATH ? process.env.DATA_PATH : `${process.env.PWD}/app/data/`;
+
 
 /**
  * Path to the folder in which temporary files will be written by the app.
  * @constant
  */
 export const TMP_PATH = `${process.env.PWD}/app/tmp/`;
-
-/**
- * Path to the "data" folder.
- */
-export const DATA_PATH = `${process.env.PWD}/app/data/`;
 
 /**
  * Path to the "templates" folder.
