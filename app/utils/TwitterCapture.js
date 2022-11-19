@@ -169,8 +169,6 @@ export class TwitterCapture {
     // Freeze edited PDF in memory
     editedPDF = await editablePDF.save();
 
-    fs.writeFileSync("unsigned.pdf", editedPDF)
-
     // Sign
     editedPDF = await this.signPDF(editedPDF);
 
