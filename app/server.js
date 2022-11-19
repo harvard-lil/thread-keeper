@@ -162,7 +162,7 @@ export default async function (fastify, opts) {
         CAPTURES_WATCH.currentByAccessKey[accessKey] = 1;
       }
 
-      const tweets = new TwitterCapture(data.url);
+      const tweets = new TwitterCapture(data.url, {runBrowserBehaviors: "auto-scroll" in data});
       const pdf = await tweets.capture();
 
       SuccessLog.add(accessKey, pdf);

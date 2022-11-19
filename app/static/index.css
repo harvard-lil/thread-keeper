@@ -173,10 +173,26 @@ body#index > main form fieldset.submit {
   text-align: right;
 }
 
-body#index > main form fieldset.submit a {
-  font-size: 0.85rem;
+body#index > main form fieldset.submit span {
+}
+
+body#index > main form fieldset.submit span * {
   display: inline-block;
+  font-size: 0.85rem;
+  width: auto;
   padding: 0.5rem;
+}
+
+body#index > main form fieldset.submit span input {
+  padding-right: 0.25rem;
+  margin-top: -1px;
+  vertical-align: middle;
+  cursor: pointer;
+}
+
+body#index > main form fieldset.submit span label {
+  cursor: pointer;
+  padding-left: 0.25rem;
 }
 
 /* INDEX - DIALOG */

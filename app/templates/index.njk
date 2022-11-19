@@ -46,7 +46,11 @@
         </fieldset>
           
         <fieldset class="submit">
-          <a href="https://docs.google.com/forms/d/11pVfBReAHmHGmtzKrQ4XqrvOMBr4BI4bX-hDdsn0OuQ/viewform" target="_blank" rel="noreferer">Request an access key.</a>
+          <span>
+            <input type="checkbox" name="auto-scroll" id="auto-scroll" checked/>
+            <label for="auto-scroll">Unfold thread</label>
+          </span>
+
           <button>Capture</button>
         </fieldset>
 
@@ -128,7 +132,7 @@
 
         <p>You can download <a href="https://crt.sh/?id=8004113167">this public key file</a> and add it to Adobe Acrobat. We'll also add a page on our site shortly where you can upload a PDF and we'll confirm whether it really came from us.</p>
 
-        <p>Tech nerd note: As an extra check, the key you're downloading here happens to be one that we also verified via LetsEncrypt as belonging to our Harvard domain, lil.law.harvard.edu. You can see the same key in <a href="https://crt.sh/?id=8004113167">the certificate transparency logs</a>.</p>
+        <p>Tech nerd note: As an extra check, the key you're downloading here happens to be one that we also verified via LetsEncrypt as belonging to our domain. You can see the same key in <a href="https://crt.sh/?id=8004113167">the certificate transparency logs</a>.</p>
 
         <h2>Does a signature on a PDF web archive mean it's real?</h2>
 

@@ -32,6 +32,7 @@ export class TwitterCapture {
    * @property {string} ytDlpPath - Path to the `yt-dlp` executable.
    * @property {string} timestampServerUrl - Timestamping server.
    * @property {number} networkidleTimeout - Time to wait for "networkidle" state.
+   * @property {boolean} runBrowserBehaviors - If `true`, will try to auto-scroll and open more responses. Set to `false` automatically when trying to capture a profile url.
    * @property {number} browserBehaviorsTimeout - Maximum browser behaviors execution time.
    * @property {number} videoCaptureTimeout - Maximum yt-dlp execution time.
    * @property {number} renderTimeout  - Time to wait for re-renders.
@@ -43,9 +44,10 @@ export class TwitterCapture {
     ytDlpPath: `${EXECUTABLES_FOLDER}yt-dlp`,
     timestampServerUrl: "http://timestamp.digicert.com",
     networkidleTimeout: 5000,
+    runBrowserBehaviors: true,
     browserBehaviorsTimeout: 33500,
     videoCaptureTimeout: 10000,
-    renderTimeout: 4000
+    renderTimeout: 4000,
   };
 
   /** @type {object} - Based on TwitterCapture.defaults */
@@ -62,6 +64,7 @@ export class TwitterCapture {
    *   browser: ?import('playwright').Browser,
    *   context: ?import('playwright').BrowserContext,
    *   page: ?import('playwright').Page,
+   *   viewport: ?{width: number, height: number},
    *   ready: boolean
    * }}
    */
@@ -69,6 +72,7 @@ export class TwitterCapture {
     browser: null,
     context: null,
     page: null,
+    viewport: null,
     ready: false
   };
 
@@ -82,6 +86,11 @@ export class TwitterCapture {
   constructor(url, options = {}) {
     this.filterUrl(url);
     this.filterOptions(options);
+
+    // Options adjustments:
+    if (this.urlType === "profile") {
+      this.options.runBrowserBehaviors = false;
+    }
   }
 
   /**
@@ -109,11 +118,13 @@ export class TwitterCapture {
     await this.adjustUIForCapture();
 
     // Run browser behaviors
-    if (this.urlType !== "profile") { // Skipped on profile pages
+    if (this.options.runBrowserBehaviors === true) {
       await this.runBrowserBehaviors();
     }
     else {
-      new Promise(resolve => setTimeout(resolve, this.options.networkidleTimeout));
+      await new Promise((resolve) =>
+        setTimeout(resolve, this.options.networkidleTimeout + this.options.renderTimeout)
+      );
     }
 
     // Wait for network idle 
@@ -149,15 +160,16 @@ export class TwitterCapture {
       //console.log(err);
     }
 
+    // Try to crop remaining white space
+    await this.cropMarginsOnPDF(editablePDF);
+
     // Try to capture video, if any, and add it as attachment
     await this.captureAndAddVideoToPDF(editablePDF);
 
     // Freeze edited PDF in memory
     editedPDF = await editablePDF.save();
 
-    // Crop and compress
-    editedPDF = await this.cropMarginsOnPDF(editedPDF);
-    editedPDF = await this.compressPDF(editedPDF);
+    fs.writeFileSync("unsigned.pdf", editedPDF)
 
     // Sign
     editedPDF = await this.signPDF(editedPDF);
@@ -174,7 +186,7 @@ export class TwitterCapture {
 
   /**
    * Sets up the browser used for capture as well as network interception for images capture.
-   * Populates `this.playwright` and `this.playwrightIsReady`;
+   * Populates `this.playwright`.
    * @returns {Promise<void>}
    */
   setup = async() => {
@@ -187,6 +199,8 @@ export class TwitterCapture {
     });
     this.playwright.context = await this.playwright.browser.newContext({ userAgent });
     this.playwright.page = await this.playwright.context.newPage();
+
+    this.playwright.viewport = viewport;
 
     this.playwright.page.setViewportSize(viewport);
 
@@ -495,65 +509,26 @@ export class TwitterCapture {
   }
 
   /**
-   * @param {Buffer} editedPDF - PDF Bytes
-   * @returns {Buffer} - PDF Bytes
+   * Tries to remove some of the white space at the bottom of the PDF.
+   * [!] TODO: This is a "let's ship it" hack. We will need to find a better solution.
+   * @param {PDFDocument} editablePDF 
    */
-  cropMarginsOnPDF = async(editedPDF) => {
-    // Save PDF to disk
-    const id = uuidv4();
-    const filepathIn = `${this.options.tmpFolderPath}${id}-in.pdf`;
-    const filepathOut = `${this.options.tmpFolderPath}${id}-out.pdf`;
-    fs.writeFileSync(filepathIn, editedPDF);
+  cropMarginsOnPDF = async(editablePDF) => {
+    const page = editablePDF.getPage(0);
+    const originalHeight = page.getHeight();
 
-    // Apply cropping
-    const run = spawnSync(
-      "pdf-crop-margins",
-      ["-p", "0", "-a", "-20", "-o", filepathOut, filepathIn],
-      { encoding: "utf-8" }
-    );
-  
-    if (run.status !== 0) {
-      throw new Error(run.stderr);
+    // Only crop if content > viewport
+    if (this.playwright.viewport.height > originalHeight) {
+      return;
     }
-  
-    // Load cropped file from disk and return
-    editedPDF = fs.readFileSync(filepathOut);
-    fs.unlink(filepathIn, () => {});
-    fs.unlink(filepathOut, () => {});
 
-    return editedPDF;
-  }
+    const reductionFactor = this.options.runBrowserBehaviors ? 44 : 88;
 
-  /**
-   * @param {Buffer} editedPDF - PDF Bytes
-   * @returns {Buffer} - PDF Bytes
-   */
-  compressPDF = async(editedPDF) => {
-    // Save PDF to disk
-    const id = uuidv4();
-    const filepathIn = `${this.options.tmpFolderPath}${id}-in.pdf`;
-    const filepathOut = `${this.options.tmpFolderPath}${id}-out.pdf`;
-    fs.writeFileSync(filepathIn, editedPDF);
+    const newHeight = Math.floor(originalHeight - (originalHeight / 100 * reductionFactor));
+    const yShift = originalHeight - newHeight;
 
-    const run = spawnSync("gs", [
-      "-sDEVICE=pdfwrite",
-      "-dNOPAUSE",
-      "-dBATCH",
-      "-dJPEGQ=90",
-      "-r150",
-      `-sOutputFile=${filepathOut}`,
-      `${filepathIn}`,
-    ]);
-
-    if (run.status !== 0) {
-      throw new Error(run.stderr);
-    }
-  
-    // Load compressed file from disk and return
-    editedPDF = fs.readFileSync(filepathOut);
-    fs.unlink(filepathIn, () => {});
-    fs.unlink(filepathOut, () => {});
-    return editedPDF;
+    page.setSize(page.getWidth(), newHeight);
+    page.translateContent(0, -yShift);
   }
 
   /**
