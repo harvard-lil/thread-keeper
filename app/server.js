@@ -73,7 +73,7 @@ export default async function (fastify, opts) {
   /**
    * [POST] /
    * Processes a request to capture a twitter url. 
-   * Serves PDF byte directly if operation is successful.
+   * Serves PDF bytes directly if operation is successful.
    * Returns to form with specific error code, passed as `errorReason`, otherwise.
    */
   fastify.post('/', async (request, reply) => {
