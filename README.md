@@ -55,6 +55,8 @@ npm run generate-dev-cert # Will generate a certificate for self-signing PDFs. F
 npm run dev # Starts the development server on port 3000
 ```
 
+[☝️ Back to summary](#summary)
+
 ---
 
 ## Dev CLI
@@ -86,3 +88,5 @@ npm run docgen
 ```
 
 Generates JSDoc-based code documentation under `/docs`.
+
+[☝️ Back to summary](#summary)
