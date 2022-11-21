@@ -4,9 +4,12 @@
  * @author The Harvard Library Innovation Lab
  * @license MIT
  */
- import fs from "fs";
+import assert from "assert";
+import fs from "fs";
 
- import { DATA_PATH } from "../const.js";
+import { validate as uuidValidate } from 'uuid';
+
+import { DATA_PATH } from "../const.js";
  
 /**
  * Utility class for handling access keys to the app.
@@ -20,21 +23,43 @@ export class AccessKeys {
    */
   static filepath = `${DATA_PATH}access-keys.json`;
 
+
   /**
-   * Tries to load access keys hashmap from disk. 
-   * Creates empty file if none provided.
-   * 
-   * @returns {object} - Frozen object
+   * Frozen hashmap of available access keys 
+   * (app needs to be restarted for new keys to be taken into account, for now).
+   * @type {object.<string,boolean>}
    */
-  static fetch() {
+  #keys = {};
+
+  /**
+   * On init:
+   * - Create access keys file if it doesn't exist
+   * - Load keys from file into `this.#keys`.
+   */
+  constructor() {
     const filepath = AccessKeys.filepath;
 
     try {
       const keys = fs.readFileSync(filepath);
-      return Object.freeze(JSON.parse(keys));
+      this.#keys = Object.freeze(JSON.parse(keys));
     }
     catch (err) {
       fs.writeFileSync(filepath, "{}");
+    }
+  }
+
+  /**
+   * Checks that a given access key is valid and active.
+   * @param {string} accessKey 
+   */
+  check(accessKey) {
+    try {
+      assert(uuidValidate(accessKey));
+      assert(this.#keys[accessKey] === true);
+      return true;
+    }
+    catch(err) {
+      return false;
     }
   }
 }
