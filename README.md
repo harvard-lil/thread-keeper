@@ -33,7 +33,7 @@ High-fidelity capture of Twitter threads as sealed PDFs - [archive.social](https
 curl bash gcc g++ python3 python3-pip python3-dev zlib1g zlib1g-dev libjpeg-dev libssl-dev libffi-dev ghostscript poppler-utils
 ```
 
-- ⚠️ This project is only compatible with Ubuntu at the time, because it uses Playwright + Chrome.
+- ⚠️ On Linux, this project is only compatible with Ubuntu at the time, because it uses Playwright + Chrome.
 - Node may be sourced from [Nodesource](https://github.com/nodesource/distributions/blob/master/README.md#installation-instructions).
 
 ### For development on Mac OS
