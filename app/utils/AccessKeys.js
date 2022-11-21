@@ -33,7 +33,7 @@ export class AccessKeys {
 
   /**
    * On init:
-   * - Create access keys file is it doesn't exist
+   * - Create access keys file if it doesn't exist
    * - Load keys from file into `this.#keys`.
    */
   constructor() {
