@@ -28,7 +28,7 @@ export class SuccessLog {
 
   /**
    * On init:
-   * - Create log file is it doesn't exist
+   * - Create log file if it doesn't exist
    * - Load hashes from file into `this.#hashes`.
    */
   constructor() {
