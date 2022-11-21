@@ -130,10 +130,11 @@ body#index > main form {
   display: block;
   margin: auto;
   border-top: 1px solid var(--main-color-----);
-  /*border-bottom: 1px solid var(--main-color-----);*/
+  border-bottom: 1px solid var(--main-color-----);
   padding-top: 1.5rem;
-  margin-bottom: 1rem;
+  padding-bottom: 1.5rem;
   margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
 }
 
 @media (max-width: 769px) {
@@ -171,9 +172,6 @@ body#index > main form input {
 
 body#index > main form fieldset.submit {
   text-align: right;
-}
-
-body#index > main form fieldset.submit span {
 }
 
 body#index > main form fieldset.submit span * {
@@ -221,15 +219,34 @@ body#index > main dialog[open]::backdrop {
   overflow: hidden;
 }
 
-/* INDEX - EXPLAINER */
-body#index > main section {
-  max-width: 45ch;
-  margin: auto;
-  padding-top: 1.5rem;
-  margin-bottom: 1.5rem;
-  border-top: 1px solid var(--main-color-----);
+body#index > main dialog#check-pdf button {
+  margin-right: 1rem;
 }
 
+body#index > main dialog#check-pdf input {
+  display: block;
+  width: 100%;
+  margin-bottom: 1rem;
+  cursor: pointer;
+}
+
+body#index > main dialog#check-pdf textarea {
+  display: block;
+  width: 100%;
+  margin-bottom: 1rem;
+  cursor: pointer;
+  height: 6rem;
+  padding: 0.5rem;
+  font-size: 0.65rem;
+}
+
+/* INDEX - EXPLAINER */
+body#index > main section {
+  max-width: 55ch;
+  margin: auto;
+  margin-bottom: 1.5rem;
+  /*border-top: 1px solid var(--main-color-----);*/
+}
 
 body#index > main section p {
   margin-bottom: 0.5rem;

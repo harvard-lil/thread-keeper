@@ -4,10 +4,8 @@
  * @author The Harvard Library Innovation Lab
  * @license MIT
  */
-import fs from "fs";
 import assert from "assert";
 
-import { validate as uuidValidate } from 'uuid';
 import nunjucks from "nunjucks";
 
 import { AccessKeys, SuccessLog, TwitterCapture } from "./utils/index.js";
@@ -17,6 +15,16 @@ import {
   MAX_PARALLEL_CAPTURES_TOTAL,
   MAX_PARALLEL_CAPTURES_PER_ACCESS_KEY,
 } from "./const.js";
+
+/**
+ * @type {SuccessLog}
+ */
+const successLog = new SuccessLog();
+
+/**
+ * @type {AccessKeys}
+ */
+const accessKeys = new AccessKeys();
 
 /**
  * Keeps track of how many capture processes are currently running.
@@ -37,12 +45,6 @@ const CAPTURES_WATCH = {
   currentByAccessKey: {},
   maxPerAccessKey: MAX_PARALLEL_CAPTURES_PER_ACCESS_KEY,
 }
-
-/**
- * Frozen copy of currently valid access keys.
- * [!] For this alpha: app needs to be restarted for changes to be into account.
- */
-const ACCESS_KEYS = AccessKeys.fetch();
 
 export default async function (fastify, opts) {
 
@@ -71,9 +73,8 @@ export default async function (fastify, opts) {
   /**
    * [POST] /
    * Processes a request to capture a twitter url. 
-   * Renders success page with PDF if capture went through.
+   * Serves PDF byte directly if operation is successful.
    * Returns to form with specific error code, passed as `errorReason`, otherwise.
-   * 
    */
   fastify.post('/', async (request, reply) => {
     const data = request.body;
@@ -84,11 +85,7 @@ export default async function (fastify, opts) {
     //
     // Check access key
     //
-    try {
-      assert(uuidValidate(accessKey));
-      assert(ACCESS_KEYS[accessKey]);
-    }
-    catch(err) {
+    if (!accessKeys.check(accessKey)) {
       const html = nunjucks.render(`${TEMPLATES_PATH}index.njk`, {
         error: true,
         errorReason: "ACCESS-KEY"
@@ -165,7 +162,7 @@ export default async function (fastify, opts) {
       const tweets = new TwitterCapture(data.url, {runBrowserBehaviors: "auto-scroll" in data});
       const pdf = await tweets.capture();
 
-      SuccessLog.add(accessKey, pdf);
+      successLog.add(accessKey, pdf);
 
       return reply
         .code(200)
@@ -195,5 +192,24 @@ export default async function (fastify, opts) {
       }
     }
 
+  });
+
+
+  /**
+   * [GET] /api/v1/hashes/check/<sha512-hash>
+   * Checks if a given SHA512 hash is in the "success" logs, meaning this app created it.
+   * Hash is passed as the last parameter, url encoded.
+   * 
+   * Returns HTTP 200 if found, HTTP 404 if not. 
+   */
+   fastify.get('/api/v1/hashes/check/:hash', async (request, reply) => {
+    let found = false;
+    const { hash } = request.params;
+
+    if (hash.length === 95 || hash.length === 88) {
+      found = successLog.findHashInLogs(hash);
+    }
+
+    return reply.code(found ? 200 : 404).send();
   });
 };
