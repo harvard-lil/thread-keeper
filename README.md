@@ -1,8 +1,8 @@
-# archive.social 📚
+# Save Your Threads 📚
 
-High-fidelity capture of Twitter threads as sealed PDFs - [archive.social](https://archive.social). 
+High-fidelity capture of Twitter threads as sealed PDFs: [archive.social](https://archive.social). 
 
-[Archive.social](https://archive.social) is an experiment of the [Harvard Library Innovation Lab](https://lil.law.harvard.edu).
+An experiment of the [Harvard Library Innovation Lab](https://lil.law.harvard.edu).
 
 > 🚧 Experimental / Prototype. Early release to be consolidated. 
 
