@@ -50,8 +50,8 @@ export class TwitterCapture {
     renderTimeout: 4000,
   };
 
-  /** @type {object} - Based on TwitterCapture.defaults */
-  options = {};
+  /** @type {object} */
+  options = {}; // Based on TwitterCapture.defaults 
 
   /** @type {?string} */
   url = null;
@@ -61,9 +61,9 @@ export class TwitterCapture {
 
   /**
    * @type {{
-   *   browser: ?import('playwright').Browser,
-   *   context: ?import('playwright').BrowserContext,
-   *   page: ?import('playwright').Page,
+   *   browser: playwright.Browser,
+   *   context: playwright.BrowserContext,
+   *   page: playwright.Page,
    *   viewport: ?{width: number, height: number},
    *   ready: boolean
    * }}
@@ -219,7 +219,7 @@ export class TwitterCapture {
   }
 
   /**
-   * Adjusts the current page's DOM so the resulting PDF is not affected by UI artifact.
+   * Adjusts the current page's DOM so the resulting PDF is not affected by UI artifact. 
    * Playwright needs to be ready.
    * 
    * @returns {Promise<void>}
@@ -366,7 +366,7 @@ export class TwitterCapture {
    * Uses Playwright's network interception to capture images and add them to `this.interceptedJPEGs`.
    * Called whenever Playwright processes an HTTP response.
    * 
-   * @param {import('playwright').Response} response
+   * @param {playwright.Response} response
    * @returns {Promise<void>}
    */
   interceptJpegs = async(response) => {
