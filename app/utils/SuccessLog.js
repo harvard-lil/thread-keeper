@@ -77,7 +77,7 @@ export class SuccessLog {
     // Save entry
     const entry = `${new Date().toISOString()}\t${accessKey}\tsha512-${hash}\n`;
     fs.appendFileSync(SuccessLog.filepath, entry);
-    this.#hashes[hash] = true;
+    this.#hashes[`sha512-${hash}`] = true;
   }
 
   /**
