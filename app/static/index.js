@@ -122,7 +122,7 @@ checkPdfDialog.querySelector("button").addEventListener("click", async(e) => {
     }
   }
   catch(err) {
-    console.log(`/api/v1/hashes/check/<hash> responsed with HTTP ${err}`);
+    console.log(`/api/v1/hashes/check/<hash> responded with HTTP ${err}`);
     output.value += `An error occurred while trying to verify file.`;
   }
 });
