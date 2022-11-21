@@ -13,7 +13,7 @@ import { DATA_PATH } from "../const.js";
  
 /**
  * Utility class for handling access keys to the app.
- * [!] Needs replacement.
+ * [!] For alpha launch only.
  */
 export class AccessKeys {
 

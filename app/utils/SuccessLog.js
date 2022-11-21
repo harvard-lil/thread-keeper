@@ -1,6 +1,6 @@
 /**
  * archive.social
- * @module utils.logCaptureSuccess
+ * @module utils.SuccessLog
  * @author The Harvard Library Innovation Lab
  * @license MIT
  */
