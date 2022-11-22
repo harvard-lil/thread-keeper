@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Save Your Threads | High-fidelity capture of Twitter threads as sealed PDFs.</title>
-    <meta name="description" content="An experiment of the Harvard Library Innovation Lab.">
+    <title>Save Your Threads</title>
+    <meta name="description" content="High-fidelity capture of Twitter threads as sealed PDFs. An experiment of the Harvard Library Innovation Lab.">
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -56,8 +56,17 @@
 
       </form>
 
+      <dialog id="form-submit">
+        <h2>Request a capture.</h2>
+
+        <p>Submitting this form will open a new tab, in which your request will be processed.</p>
+
+        <p>The capture process should take around a minute, at the end of which the resulting sealed PDF will be ready to be downloaded.</p>
+
+        <button>I understand, proceed.</button>
+      </dialog>
+
       {% if error %}
-      <!-- ERROR DIALOG -->
       <dialog id="form-error">
         <h2>Something went wrong</h2>
 
@@ -85,17 +94,6 @@
       </dialog>
       {% endif %}
 
-      <!-- FORM SUBMIT DIALOG -->
-      <dialog id="form-submit">
-        <h2>Request a capture.</h2>
-
-        <p>Submitting this form will open a new tab, in which your request will be processed.</p>
-
-        <p>The capture process should take around a minute, at the end of which the resulting sealed PDF will be ready to be downloaded.</p>
-
-        <button>I understand, proceed.</button>
-      </dialog>
-
       <dialog id="check-pdf">
         <h2>Check a PDF</h2>
 
@@ -114,7 +112,6 @@
         <a href="#">Close</a>
       </dialog>
 
-      <!-- EXPLAINER -->
       <section>
         <h2>What is this?</h2>
 
@@ -166,7 +163,6 @@
          
       </section>
 
-      <!-- FOOTER -->
       <footer>
         <p>
           <a href="https://lil.law.harvard.edu">
