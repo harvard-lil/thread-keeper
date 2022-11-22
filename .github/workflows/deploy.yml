@@ -6,7 +6,7 @@ jobs:
   build:
     runs-on: ubuntu-20.04
     # don't run on pushes to forks
-    if: github.repository == 'harvard-lil/archive.social'
+    if: github.repository == 'harvard-lil/thread-keeper'
     steps:
       - name: Deploy
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
