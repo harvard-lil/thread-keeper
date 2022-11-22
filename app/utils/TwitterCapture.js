@@ -150,10 +150,10 @@ export class TwitterCapture {
 
     // Remove extraneous page, add metadata
     try {
-      editablePDF.setTitle(`Capture of ${this.url} by archive.social on ${new Date().toISOString()}`);
+      editablePDF.setTitle(`Capture of ${this.url} by thread-keeper on ${new Date().toISOString()}`);
       editablePDF.setCreationDate(new Date());
       editablePDF.setModificationDate(new Date());
-      editablePDF.setProducer("archive.social");
+      editablePDF.setProducer("thread-keeper");
       editablePDF.removePage(1);
     }
     catch {

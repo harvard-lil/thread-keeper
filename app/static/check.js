@@ -64,11 +64,11 @@ checkPdfDialog.querySelector("button").addEventListener("click", async(e) => {
 
     switch (response.status) {
       case 200:
-        output.value += `This hash is CONFIRMED to be present in archive.social's logs.\n`;
+        output.value += `This hash is CONFIRMED to be present in the logs.\n`;
       break;
 
       case 404:
-        output.value += `This hash was NOT FOUND in archive.social's logs.\n`;
+        output.value += `This hash was NOT FOUND in the logs.\n`;
       break;
 
       default:

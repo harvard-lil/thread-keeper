@@ -79,7 +79,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/harvard-lil/archive.social.git"
+    "url": "git+https://github.com/harvard-lil/thread-keeper.git"
   },
   "author": "",
   "license": "ISC",
