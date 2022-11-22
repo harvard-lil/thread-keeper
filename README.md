@@ -55,6 +55,21 @@ npm run generate-dev-cert # Will generate a certificate for self-signing PDFs. F
 npm run dev # Starts the development server on port 3000
 ```
 
+Create an access key to test with:
+
+```
+$ uuidgen
+BB67BBC4-1F4B-4353-8E6D-9927A10F4509
+```
+
+and then add the key to `app/data/access-keys.json`:
+
+```json
+{
+  "BB67BBC4-1F4B-4353-8E6D-9927A10F4509": true,
+}
+```
+
 [☝️ Back to summary](#summary)
 
 ---
