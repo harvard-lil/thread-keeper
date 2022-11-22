@@ -1,5 +1,5 @@
 {
-  "name": "archive.social",
+  "name": "thread-keeper",
   "version": "0.0.1",
   "description": "",
   "main": "app.js",
@@ -84,7 +84,7 @@
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/harvard-lil/archive.social/issues"
+    "url": "https://github.com/harvard-lil/thread-keeper/issues"
   },
-  "homepage": "https://github.com/harvard-lil/archive.social#readme"
+  "homepage": "https://github.com/harvard-lil/thread-keeper#readme"
 }

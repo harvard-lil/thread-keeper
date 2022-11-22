@@ -1,5 +1,5 @@
 /**
- * archive.social
+ * thread-keeper
  * @module utils.TwitterCapture
  * @author The Harvard Library Innovation Lab
  * @license MIT

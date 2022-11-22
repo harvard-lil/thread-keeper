@@ -70,6 +70,7 @@ body > main h1 {
 body > main h2 {
   font-size: 1.65rem;
   letter-spacing: -0.05rem;
+  margin-top: 0.25rem;
 }
 
 @media (max-width: 769px) {
@@ -87,12 +88,12 @@ body > main p {
   line-height: 1.45rem;
 }
 
-/* INDEX - GENERAL*/
-body#index > main {
+/* GENERAL LAYOUT */
+body > main {
   min-height: 100vh;
 }
 
-body#index > main button {
+body > main button {
   font-family: Garamond, serif;
   font-size: 0.85rem;
   border: 0px;
@@ -106,12 +107,22 @@ body#index > main button {
   transition: background-color 0.35s ease-in-out;
 }
 
-body#index > main button:hover {
+body > main button:hover {
   background-color: var(--main-color-);
 }
 
-/* INDEX - HEADER */
-body#index > main > img:first-of-type {
+body > main hr {
+  margin: auto;
+  width: 45ch;
+  border: 0px;
+  border-top: 1px solid var(--main-color-----); 
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+
+/* GENERAL  - HEADER */
+body > main > img:first-of-type {
   display: block;
   margin: auto;
   margin-bottom: 1rem;
@@ -119,8 +130,107 @@ body#index > main > img:first-of-type {
   max-height: 62.5vh;
 }
 
-body#index > main header {
+body > main header {
   text-align: center;
+}
+
+/* GENERAL - DIALOGS */
+body > main dialog {
+  display: none;
+}
+
+body > main dialog[open] {
+  display: unset;
+  margin: auto;
+  border: 0px;
+  width: 50ch;
+  max-width: 90%;
+  padding: 2rem;
+  border: 0.5rem solid var(--main-color);
+}
+
+body > main dialog[open] p {
+  font-size: 0.9rem;
+  line-height: 1.45rem;
+  margin-bottom: 1rem;
+}
+
+body > main dialog[open]::backdrop {
+  background-color: rgba(0,0,0,0.65);
+  overflow: hidden;
+}
+
+body > main dialog#check-pdf button {
+  margin-right: 1rem;
+}
+
+body > main dialog#check-pdf input {
+  display: block;
+  width: 100%;
+  margin-bottom: 1rem;
+  cursor: pointer;
+}
+
+body > main dialog#check-pdf textarea {
+  display: block;
+  width: 100%;
+  margin-bottom: 1rem;
+  cursor: pointer;
+  height: 6rem;
+  padding: 0.5rem;
+  font-size: 0.65rem;
+}
+
+/* GENERAL - TEXT CONTENT */
+body > main section {
+  max-width: 55ch;
+  margin: auto;
+  margin-bottom: 1.5rem;
+}
+
+body > main section p {
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+  line-height: 1.45rem;
+}
+
+body > main section p.spaced {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 769px) {
+  body > main section {
+    max-width: unset;
+  }
+}
+
+/* GENERAL - FOOTER */
+body > main footer {
+  max-width: 45ch;
+  margin: auto;
+  text-align: center;
+  padding-top: 2rem;
+  margin-bottom: 1.5rem;
+  border-top: 1px solid var(--main-color-----);
+}
+
+body > main footer p {
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+  line-height: 1.3rem;
+}
+
+@media (max-width: 769px) {
+  body > main footer {
+    max-width: unset;
+  }
+}
+
+body > main footer img {
+  width: 10rem;
+  display: inline-block;
+  max-width: 50%;
 }
 
 /* INDEX - FORM */
@@ -190,99 +300,4 @@ body#index > main form fieldset.submit span input {
 body#index > main form fieldset.submit span label {
   cursor: pointer;
   padding-left: 0.25rem;
-}
-
-/* INDEX - DIALOG */
-body#index > main dialog {
-  display: none;
-}
-
-body#index > main dialog[open] {
-  display: unset;
-  margin: auto;
-  border: 0px;
-  width: 50ch;
-  max-width: 90%;
-  padding: 2rem;
-  border: 0.5rem solid var(--main-color);
-}
-
-body#index > main dialog[open] p {
-  font-size: 0.9rem;
-  line-height: 1.45rem;
-  margin-bottom: 1rem;
-}
-
-body#index > main dialog[open]::backdrop {
-  background-color: rgba(0,0,0,0.65);
-  overflow: hidden;
-}
-
-body#index > main dialog#check-pdf button {
-  margin-right: 1rem;
-}
-
-body#index > main dialog#check-pdf input {
-  display: block;
-  width: 100%;
-  margin-bottom: 1rem;
-  cursor: pointer;
-}
-
-body#index > main dialog#check-pdf textarea {
-  display: block;
-  width: 100%;
-  margin-bottom: 1rem;
-  cursor: pointer;
-  height: 6rem;
-  padding: 0.5rem;
-  font-size: 0.65rem;
-}
-
-/* INDEX - EXPLAINER */
-body#index > main section {
-  max-width: 55ch;
-  margin: auto;
-  margin-bottom: 1.5rem;
-  /*border-top: 1px solid var(--main-color-----);*/
-}
-
-body#index > main section p {
-  margin-bottom: 0.5rem;
-  font-size: 0.95rem;
-  line-height: 1.45rem;
-}
-
-@media (max-width: 769px) {
-  body#index > main section {
-    max-width: unset;
-  }
-}
-
-/* INDEX - FOOTER */
-body#index > main footer {
-  max-width: 45ch;
-  margin: auto;
-  text-align: center;
-  padding-top: 2rem;
-  margin-bottom: 1.5rem;
-  border-top: 1px solid var(--main-color-----);
-}
-
-body#index > main footer p {
-  margin-bottom: 0.5rem;
-  font-size: 0.95rem;
-  line-height: 1.3rem;
-}
-
-@media (max-width: 769px) {
-  body#index > main footer {
-    max-width: unset;
-  }
-}
-
-body#index > main footer img {
-  width: 10rem;
-  display: inline-block;
-  max-width: 50%;
 }

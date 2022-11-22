@@ -1,7 +1,7 @@
 <a name="server.module_js"></a>
 
 ## js
-archive.social
+thread-keeper
 
 **Author**: The Harvard Library Innovation Lab  
 **License**: MIT  
@@ -11,6 +11,7 @@ archive.social
     * [~accessKeys](#server.module_js..accessKeys) : <code>AccessKeys</code>
     * [~CAPTURES_WATCH](#server.module_js..CAPTURES_WATCH) : <code>Object</code>
     * [~index(request, reply)](#server.module_js..index) ⇒ <code>Promise.&lt;fastify.FastifyReply&gt;</code>
+    * [~check(request, reply)](#server.module_js..check) ⇒ <code>Promise.&lt;fastify.FastifyReply&gt;</code>
     * [~capture(request, reply)](#server.module_js..capture) ⇒ <code>Promise.&lt;fastify.FastifyReply&gt;</code>
     * [~checkHash(request, reply)](#server.module_js..checkHash) ⇒ <code>Promise.&lt;fastify.FastifyReply&gt;</code>
 
@@ -36,6 +37,20 @@ May be used to redirect users if over capacity.
 ### js~index(request, reply) ⇒ <code>Promise.&lt;fastify.FastifyReply&gt;</code>
 [GET] / 
 Shows the landing page / form.
+Assumes `fastify` is in scope.
+
+**Kind**: inner method of [<code>js</code>](#server.module_js)  
+
+| Param | Type |
+| --- | --- |
+| request | <code>fastify.FastifyRequest</code> | 
+| reply | <code>fastify.FastifyReply</code> | 
+
+<a name="server.module_js..check"></a>
+
+### js~check(request, reply) ⇒ <code>Promise.&lt;fastify.FastifyReply&gt;</code>
+[GET] /check
+Shows the "check" page /check form. Loads certificates history files in the process.
 Assumes `fastify` is in scope.
 
 **Kind**: inner method of [<code>js</code>](#server.module_js)  
