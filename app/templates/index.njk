@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <title>Save Your Threads</title>
-    <meta name="description" content="High-fidelity capture of Twitter threads as sealed PDFs. An experiment of the Harvard Library Innovation Lab.">
+    <meta name="description" content="High-fidelity capture of Twitter threads as sealed PDFs on social.perma.cc. An experiment of the Harvard Library Innovation Lab.">
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,17 +14,13 @@
   <body id="index">
     <main>
 
-      <!-- HEADER -->
-      <img 
-        src="/static/ocean-of-books.svg" 
-        alt="Illustration of a person falling in an ocean of books.">
+      {% include "./modules/header-pic.njk" %}
 
       <header>
         <h1>Save Your Threads</h1>
         <p>High-fidelity capture of Twitter threads as sealed PDFs.</p>
       </header>
 
-      <!-- MAIN FORM -->
       <form action="/" target="_blank" method="POST" enctype="application/x-www-form-urlencoded">
 
         <fieldset>
@@ -79,7 +75,7 @@
         {% endif %}
 
         {% if errorReason and errorReason == "TOO-MANY-CAPTURES-TOTAL" %}
-        <p>archive.social has received too many requests. Please retry in a minute.</p>
+        <p>Too many requests. Please retry in a minute.</p>
         {% endif %}
 
         {% if errorReason and errorReason == "TOO-MANY-CAPTURES-USER" %}
@@ -87,30 +83,12 @@
         {% endif %}
 
         {% if errorReason and errorReason == "CAPTURE-ISSUE" %}
-        <p>archive.social encountered an issue during the capture process itself. Please try again later.</p>
+        <p>An issue occured during the capture process itself. Please try again later.</p>
         {% endif %}
 
         <button>Ok</button>
       </dialog>
       {% endif %}
-
-      <dialog id="check-pdf">
-        <h2>Check a PDF</h2>
-
-        <p>This tool verifies that a given .pdf file was created by archive.social by matching its fingerprint against our logs.</p>
-
-        <input 
-          aria-label="File input for the PDF file to check" 
-          type="file" 
-          accept=".pdf" 
-          name="check-pdf-file"/>
-
-        <textarea disabled>Results will be displayed here.</textarea>
-
-        <button>Check PDF</button>
-
-        <a href="#">Close</a>
-      </dialog>
 
       <section>
         <h2>What is this?</h2>
@@ -119,13 +97,13 @@
 
         <h2>Who can use it?</h2>
 
-        <p>To use our website <a href="https://ocb.to/archive-social-form">you'll need to contact us</a> for an API key. We're currently only able to share a limited number with people like journalists, internet scholars, and archivists. But you can also use <a href="https://github.com/harvard-lil/archive.social">our open source software</a> to stand up an archive server of your own, and share it with your friends.</p>
+        <p>To use our website <a href="https://ocb.to/archive-social-form">you'll need to contact us</a> for an API key. We're currently only able to share a limited number with people like journalists, internet scholars, and archivists. But you can also use <a href="https://github.com/harvard-lil/thread-keeper">our open source software</a> to stand up an archive server of your own, and share it with your friends.</p>
 
         <h2>Why make a PDF archiving tool for Twitter?</h2>
 
         <p>There are lots of screenshots of Twitter threads going around. Some are real, some are fake. You can't tell who made them, or when they were made.</p>
 
-        <p>PDFs let us apply document signatures and timestamps so anyone can check, in the future, that a PDF you download with "archive.social" really came from the Harvard Library Innovation Lab and hasn't been edited. PDFs also let us bundle in additional media as attachments. Each signed PDF currently includes all images in the page (so you can see full size images that are cropped in the PDF view) and the primary video on the page if any.</p>
+        <p>PDFs let us apply document signatures and timestamps so anyone can check, in the future, that a PDF you download with this site really came from the Harvard Library Innovation Lab and hasn't been edited. PDFs also let us bundle in additional media as attachments. Each signed PDF currently includes all images in the page (so you can see full size images that are cropped in the PDF view) and the primary video on the page if any.</p>
 
         <h2>Why <em>not</em> make a PDF archiving tool for Twitter?</h2>
 
@@ -147,15 +125,13 @@
 
         <h2>How do I check that a PDF came from you?</h2>
 
-        <p>You can download <a href="https://crt.sh/?id=8004113167">this public key file (.PEM)</a> and add it to Adobe Acrobat. You can also use <a href="#check-pdf">this form</a> to confirm whether it really came from us by checking its fingerprint against our logs.</p>
-
-        <p>Tech nerd note: As an extra check, the key you're downloading here happens to be one that we also verified via LetsEncrypt as belonging to our domain. You can see the same key in <a href="https://crt.sh/?id=8004113167">the certificate transparency logs</a>.</p>
+        <p>See our <a href="/check">Signature Verification Page</a>.</p>
 
         <h2>Does a signature on a PDF web archive mean it's real?</h2>
 
         <p>Well … no. Library folks like to talk about "authenticity" and "provenance". A signature on a PDF tells you its <em>provenance</em>: you can prove that you really got the PDF from us, and that we couldn't have created it after a certain date. You'll then have to decide whether you trust our claim that the PDF we gave you represents a real page we saw on Twitter (and that no one else has messed with our servers). If someone else gives you a signed PDF, they're giving you a different provenance chain, and you can trace that back to decide who you're being asked to trust.</p>
 
-        <p>Tech nerd note: This whole trust step is needed because of something called <em>repudiability</em>: https web transactions are deliberately designed to be repudiable, meaning there's no way to tell as a third party after the fact whether they ever really happened. Signed HTTP exchanges are one proposal that may eventually let websites choose to publish verifiable content instead, but they aren't here yet. So for now, you're left deciding whether "archive.social" is an intermediary you want to choose to trust.</p>
+        <p>Tech nerd note: This whole trust step is needed because of something called <em>repudiability</em>: https web transactions are deliberately designed to be repudiable, meaning there's no way to tell as a third party after the fact whether they ever really happened. Signed HTTP exchanges are one proposal that may eventually let websites choose to publish verifiable content instead, but they aren't here yet. So for now, you're left deciding whether "social.perma.cc" is an intermediary you want to choose to trust.</p>
 
         <h2>What is your privacy policy?</h2>
 
@@ -163,19 +139,7 @@
          
       </section>
 
-      <footer>
-        <p>
-          <a href="https://lil.law.harvard.edu">
-            <img src="/static/lil.svg" alt="Harvard Library Innovation Lab - Logo">
-          </a>
-        </p>
-        
-        <p>This site is an experiment of the <a href="https://lil.law.harvard.edu">Harvard Library Innovation Lab</a>.</p>
-
-        <p><a href="https://twitter.com/harvardlil">@harvardlil</a> on Twitter - <a href="https://law.us3.list-manage.com/subscribe?u=4290964398813d739f2398db0&amp;id=e097736c6f">Subscribe to our Newsletter</a>.</p>
-
-        <p>contact: <a href="mailto:info@archive.social">info@archive.social</a></p>
-      </footer>
+      {% include "./modules/footer.njk" %}
 
     </main>
   </body>

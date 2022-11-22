@@ -1,5 +1,5 @@
 /**
- * archive.social
+ * thread-keeper
  * @module utils.SuccessLog
  * @author The Harvard Library Innovation Lab
  * @license MIT
@@ -10,7 +10,9 @@ import crypto from "crypto";
 
 import { DATA_PATH } from "../const.js";
 
-
+/**
+ * Utility class for handling success logs. Keeps trace of the hashes of the PDFs that were generated.
+ */
 export class SuccessLog {
   /** 
    * Complete path to `success-log.json`.

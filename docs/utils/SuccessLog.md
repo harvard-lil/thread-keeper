@@ -1,7 +1,7 @@
 <a name="utils.module_SuccessLog"></a>
 
 ## SuccessLog
-archive.social
+thread-keeper
 
 **Author**: The Harvard Library Innovation Lab  
 **License**: MIT  
@@ -17,6 +17,8 @@ archive.social
 <a name="utils.module_SuccessLog.SuccessLog"></a>
 
 ### SuccessLog.SuccessLog
+Utility class for handling success logs. Keeps trace of the hashes of the PDFs that were generated.
+
 **Kind**: static class of [<code>SuccessLog</code>](#utils.module_SuccessLog)  
 
 * [.SuccessLog](#utils.module_SuccessLog.SuccessLog)

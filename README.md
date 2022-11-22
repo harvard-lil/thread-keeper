@@ -1,6 +1,6 @@
-# Save Your Threads 📚
+# "Save Your Threads" - thread-keeper 📚
 
-High-fidelity capture of Twitter threads as sealed PDFs: [archive.social](https://archive.social). 
+High-fidelity capture of Twitter threads as sealed PDFs: [social.perma.cc](https://social.perma.cc). 
 
 An experiment of the [Harvard Library Innovation Lab](https://lil.law.harvard.edu).
 
@@ -45,6 +45,7 @@ A `brewfile` is available. Run `brew bundle` to install machine-level dependenci
 
 ## Local development
 
+### Getting started
 Run the following commands to initialize the project and start the development server. 
 
 ```bash
@@ -55,19 +56,41 @@ npm run generate-dev-cert # Will generate a certificate for self-signing PDFs. F
 npm run dev # Starts the development server on port 3000
 ```
 
+### Access keys
 Create an access key to test with:
 
-```
+```bash
 $ uuidgen
 BB67BBC4-1F4B-4353-8E6D-9927A10F4509
 ```
 
-and then add the key to `app/data/access-keys.json`:
+And then add the key to `app/data/access-keys.json`:
 
 ```json
 {
   "BB67BBC4-1F4B-4353-8E6D-9927A10F4509": true,
 }
+```
+
+### Certificates history
+
+The _"Signatures Verification Page"_ page lists the certificates that were used for signing PDFs with the app. You may provide that history by creating two files under `/data`:
+- `signing-certs-history.json` 
+- `timestamping-certs-history.json` 
+
+Expected format:
+
+```json
+[
+  {
+    "from": "2022-11-18 13:07:56 UTC",
+    "to": "present",
+    "domain": "domain.ext",
+    "info": "https://...",
+    "cert": "https://..."
+  },
+  ...
+]
 ```
 
 [☝️ Back to summary](#summary)
@@ -105,3 +128,4 @@ npm run docgen
 Generates JSDoc-based code documentation under `/docs`.
 
 [☝️ Back to summary](#summary)
+

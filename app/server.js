@@ -1,5 +1,5 @@
 /**
- * archive.social
+ * thread-keeper
  * @module server.js
  * @author The Harvard Library Innovation Lab
  * @license MIT
@@ -8,7 +8,7 @@ import assert from "assert";
 
 import nunjucks from "nunjucks";
 
-import { AccessKeys, SuccessLog, TwitterCapture } from "./utils/index.js";
+import { AccessKeys, CertsHistory, SuccessLog, TwitterCapture } from "./utils/index.js";
 import {
   TEMPLATES_PATH,
   STATIC_PATH,
@@ -58,6 +58,27 @@ const CAPTURES_WATCH = {
  */
 async function index(request, reply) {
   const html = nunjucks.render(`${TEMPLATES_PATH}index.njk`);
+
+  return reply
+    .code(200)
+    .header('Content-Type', 'text/html; charset=utf-8')
+    .send(html);
+}
+
+/**
+ * [GET] /check
+ * Shows the "check" page /check form. Loads certificates history files in the process.
+ * Assumes `fastify` is in scope.
+ * 
+ * @param {fastify.FastifyRequest} request
+ * @param {fastify.FastifyReply} reply 
+ * @returns {Promise<fastify.FastifyReply>}
+ */
+ async function check(request, reply) {
+  const html = nunjucks.render(`${TEMPLATES_PATH}check.njk`, {
+    signingCertsHistory: CertsHistory.load("signing"),
+    timestampsCertsHistory: CertsHistory.load("timestamping")
+  });
 
   return reply
     .code(200)
@@ -229,6 +250,9 @@ export default async function (fastify, opts) {
 
   // [GET] /
   fastify.get('/', index);
+
+  // [GET] /check
+  fastify.get('/check', check);
 
   // [POST] /
   fastify.post('/', capture);

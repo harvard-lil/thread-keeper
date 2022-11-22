@@ -1,5 +1,5 @@
 /**
- * archive.social
+ * thread-keeper
  * @module utils.AccessKeys
  * @author The Harvard Library Innovation Lab
  * @license MIT
