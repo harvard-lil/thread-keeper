@@ -10,8 +10,9 @@ import { chromium } from "playwright";
 
 import { v4 as uuidv4 } from "uuid";
 import { PDFDocument } from "pdf-lib";
+import nunjucks from "nunjucks";
 
-import { CERTS_PATH, TMP_PATH, EXECUTABLES_FOLDER } from "../const.js";
+import { CERTS_PATH, TMP_PATH, EXECUTABLES_FOLDER, TEMPLATES_PATH, APP_VERSION } from "../const.js";
 
 /**
  * Generates a "sealed" PDF out of a twitter.com url using Playwright.
@@ -26,10 +27,12 @@ import { CERTS_PATH, TMP_PATH, EXECUTABLES_FOLDER } from "../const.js";
 export class TwitterCapture {
   /**
    * Defaults for options that can be passed to `TwitterCapture`.
+   * @property {string} appVersion
    * @property {string} privateKeyPath - Path to `.pem` file containing a private key.
    * @property {string} certPath - Path to a `.pem` file containing a certificate.
    * @property {string} tmpFolderPath - Path to a folder in which temporary file can be written.
    * @property {string} ytDlpPath - Path to the `yt-dlp` executable.
+   * @property {string} templatesFolderPath - Path to the templates folder (t.co resolver summary feature).
    * @property {string} timestampServerUrl - Timestamping server.
    * @property {number} networkidleTimeout - Time to wait for "networkidle" state.
    * @property {boolean} runBrowserBehaviors - If `true`, will try to auto-scroll and open more responses. Set to `false` automatically when trying to capture a profile url.
@@ -38,9 +41,11 @@ export class TwitterCapture {
    * @property {number} renderTimeout  - Time to wait for re-renders.
    */
   static defaults = {
+    appVersion: APP_VERSION,
     privateKeyPath: `${CERTS_PATH}key.pem`,
     certPath: `${CERTS_PATH}cert.pem`,
     tmpFolderPath: `${TMP_PATH}`,
+    templatesFolderPath: `${TEMPLATES_PATH}pdf-attachments/`,
     ytDlpPath: `${EXECUTABLES_FOLDER}yt-dlp`,
     timestampServerUrl: "http://timestamp.digicert.com",
     networkidleTimeout: 5000,
@@ -145,23 +150,26 @@ export class TwitterCapture {
     rawPDF = await this.generateRawPDF();
     editablePDF = await PDFDocument.load(rawPDF);
 
-    // Add intercepted JPEGs as attachments
-    await this.addInterceptedJPEGsToPDF(editablePDF);
-
     // Remove extraneous page, add metadata
     try {
       editablePDF.setTitle(`Capture of ${this.url} by thread-keeper on ${new Date().toISOString()}`);
       editablePDF.setCreationDate(new Date());
       editablePDF.setModificationDate(new Date());
-      editablePDF.setProducer("thread-keeper");
-      editablePDF.removePage(1);
+      editablePDF.setProducer(`thread-keeper ${this.options.appVersion}`);
+      editablePDF.removePage(1); // This step may throw if there's only 1 page.
     }
-    catch {
-      //console.log(err);
+    catch { 
+      // console.log(error);
     }
 
     // Try to crop remaining white space
     await this.cropMarginsOnPDF(editablePDF);
+
+    // Add intercepted JPEGs as attachments
+    await this.addInterceptedJPEGsToPDF(editablePDF);
+
+    // Try to capture t.co to full urls map, and add it as attachment
+    await this.captureAndAddUrlMapToPDF(editablePDF);
 
     // Try to capture video, if any, and add it as attachment
     await this.captureAndAddVideoToPDF(editablePDF);
@@ -327,6 +335,7 @@ export class TwitterCapture {
     }
     catch(err) {
       // Ignore behavior errors.
+      // console.log(err);
     }
   }
 
@@ -437,6 +446,69 @@ export class TwitterCapture {
         modificationDate: new Date(),
       });
     }
+  }
+
+  /**
+   * Tries to list and resolve all the `t.co` urls on the page, and add the resulting map as an attachment.
+   * 
+   * Attachment filename: `url-map.csv`.
+   * Playwright needs to be ready.
+   * 
+   * @param {PDFDocument} - Editable PDF object from `pdf-lib`.
+   * @returns {Promise<void>}
+   */
+  captureAndAddUrlMapToPDF = async(editablePDF) => {
+    if (this.playwright.ready !== true) {
+      throw new Error("Playwright is not ready.");
+    }
+
+    /** @type {object<string, boolean|string>} */
+    const map = {};
+    const filename = "url-map.csv";
+    let output = "";
+
+    // Capture urls to resolve
+    const shortUrls = await this.playwright.page.evaluate(() => {
+      const urls = {};
+
+      for (let a of document.querySelectorAll("a[href^='https://t.co']")) {
+        urls[a.getAttribute("href")] = true;
+      }
+
+      return Object.keys(urls);
+    });
+
+    if (shortUrls.length < 1) {
+      return;
+    }
+
+    for (const url of shortUrls) {
+      map[url] = false;
+    }
+
+    // Try to resolve urls (in parallel) 
+    async function resolveShortUrl(url) {
+      try {
+        const response = await fetch(url, { method: "HEAD" });
+        map[url] = response.url;
+      }
+      catch(err) { /* console.log(err); */}
+    }
+
+    await Promise.allSettled(shortUrls.map(url => resolveShortUrl(url)));
+
+    // Generate and attach CSV
+    output = "short;long\n";
+    for (let [short, long] of Object.entries(map)) {
+      output += `"${short}";"${long ? long : ''}"\n`;
+    }
+
+    await editablePDF.attach(Buffer.from(output), filename, {
+      mimeType: 'text/csv',
+      description: `t.co links from ${this.url}`,
+      creationDate: new Date(),
+      modificationDate: new Date(),
+    });
   }
 
   /**
@@ -614,9 +686,7 @@ export class TwitterCapture {
     /** @type {?string} */
     let urlType = null;
 
-    //
     // Determine if `url` is a valid `twitter.com` and remove known tracking params
-    //
     try {
       parsedUrl = new URL(url); // Will throw if not a valid url.
 
@@ -632,9 +702,7 @@ export class TwitterCapture {
       throw new Error(`${url} is not a valid Twitter url.`);
     }
 
-    //
     // Determine Twitter url "type"
-    //
     if (parsedUrl.pathname.includes("/status/")) {
       urlType = "status";
     }

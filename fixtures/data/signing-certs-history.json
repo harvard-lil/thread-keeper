@@ -1,0 +1,9 @@
+[
+  {
+    "from": "2022-11-22 13:07:56 UTC",
+    "to": "present",
+    "domain": "lil.law.harvard.edu",
+    "info": "https://search.censys.io/certificates/320ec76aeebeb86440f574f877723484ff6826bbed6e15e77f68acc8e2c0db4e",
+    "cert": "https://search.censys.io/certificates/320ec76aeebeb86440f574f877723484ff6826bbed6e15e77f68acc8e2c0db4e/pem"
+  }
+]

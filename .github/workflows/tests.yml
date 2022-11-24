@@ -1,0 +1,33 @@
+name: Test suite
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    timeout-minutes: 60
+    runs-on: ubuntu-20.04
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v2
+      with:
+        node-version: '18.x'
+        cache: 'npm'
+
+    - uses: actions/setup-python@v4
+      with:
+        python-version: '3.10' 
+        cache: 'pip'
+
+    - name: Install system dependencies
+      run: sudo apt-get install -y bash gcc g++ python3-dev zlib1g zlib1g-dev libjpeg-dev libssl-dev libffi-dev ghostscript poppler-utils
+
+    - name: Install app dependencies
+      run: npm install
+
+    - name: Install Playwright Browser
+      run: npx playwright install --with-deps chrome
+
+    - name: Run tests
+      run: npm run test

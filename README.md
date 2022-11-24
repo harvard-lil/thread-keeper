@@ -1,10 +1,13 @@
-# "Save Your Threads" - thread-keeper 📚
+# thread-keeper 📚
 
-High-fidelity capture of Twitter threads as sealed PDFs: [social.perma.cc](https://social.perma.cc). 
+High-fidelity capture of Twitter threads as sealed PDFs @ [social.perma.cc](https://social.perma.cc). 
+
+[![](github.png)](https://social.perma.cc)
 
 An experiment of the [Harvard Library Innovation Lab](https://lil.law.harvard.edu).
 
-> 🚧 Experimental / Prototype. Early release to be consolidated. 
+> 🚧 Experimental - Prototype. 
+> Early release to be consolidated. 
 
 ---
 
@@ -126,6 +129,15 @@ npm run docgen
 ```
 
 Generates JSDoc-based code documentation under `/docs`.
+
+### test
+```bash
+npm run test
+```
+
+Runs the test suite. Requires test fixtures _(see `fixtures` folder)_.
+
+> ⚠️ At the moment, this codebase only features a very limited set of high-level integration tests.
 
 [☝️ Back to summary](#summary)
 

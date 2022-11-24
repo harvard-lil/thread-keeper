@@ -16,13 +16,11 @@ import { DATA_PATH } from "../const.js";
  * [!] For alpha launch only.
  */
 export class AccessKeys {
-
   /** 
    * Complete path to `access-keys.json`.
    * @type {string} 
    */
   static filepath = `${DATA_PATH}access-keys.json`;
-
 
   /**
    * Frozen hashmap of available access keys 

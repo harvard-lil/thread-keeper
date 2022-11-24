@@ -1,6 +1,6 @@
 /**
  * thread-keeper
- * @module server.js
+ * @module server
  * @author The Harvard Library Innovation Lab
  * @license MIT
  */
@@ -16,10 +16,11 @@ import {
   MAX_PARALLEL_CAPTURES_PER_ACCESS_KEY,
 } from "./const.js";
 
+
 /**
  * @type {SuccessLog}
  */
-const successLog = new SuccessLog();
+export const successLog = new SuccessLog();
 
 /**
  * @type {AccessKeys}
@@ -39,17 +40,41 @@ const accessKeys = new AccessKeys();
  *  maxPerAccessKey: number
  * }}
  */
-const CAPTURES_WATCH = {
+export const CAPTURES_WATCH = {
   currentTotal: 0,
   maxTotal: MAX_PARALLEL_CAPTURES_TOTAL,
   currentByAccessKey: {},
   maxPerAccessKey: MAX_PARALLEL_CAPTURES_PER_ACCESS_KEY,
 }
 
+export default async function (fastify, opts) {
+  // Adds support for `application/x-www-form-urlencoded`
+  fastify.register(import('@fastify/formbody'));
+
+  fastify.register(import("@fastify/static"), {
+    root: STATIC_PATH,
+    prefix: "/static/",
+  });
+
+  fastify.setNotFoundHandler((request, reply) => {
+    reply
+      .code(404)
+      .type('text/html')
+      .send(nunjucks.render(`${TEMPLATES_PATH}404.njk`));
+  });
+
+  fastify.get('/', index);
+  fastify.post('/', capture);
+
+  fastify.get('/check', check);
+  
+  fastify.get('/api/v1/hashes/check/:hash', checkHash);
+};
+
 
 /**
- * [GET] / 
- * Shows the landing page / form.
+ * [GET] /
+ * Shows the landing page and capture form.
  * Assumes `fastify` is in scope.
  * 
  * @param {fastify.FastifyRequest} request
@@ -66,31 +91,17 @@ async function index(request, reply) {
 }
 
 /**
- * [GET] /check
- * Shows the "check" page /check form. Loads certificates history files in the process.
- * Assumes `fastify` is in scope.
- * 
- * @param {fastify.FastifyRequest} request
- * @param {fastify.FastifyReply} reply 
- * @returns {Promise<fastify.FastifyReply>}
- */
- async function check(request, reply) {
-  const html = nunjucks.render(`${TEMPLATES_PATH}check.njk`, {
-    signingCertsHistory: CertsHistory.load("signing"),
-    timestampsCertsHistory: CertsHistory.load("timestamping")
-  });
-
-  return reply
-    .code(200)
-    .header('Content-Type', 'text/html; charset=utf-8')
-    .send(html);
-}
-
-/**
  * [POST] `/`
  * Processes a request to capture a `twitter.com` url. 
  * Serves PDF bytes directly if operation is successful.
  * Returns to form with specific error code, passed as `errorReason`, otherwise.
+ * Subject to captures rate limiting (see `CAPTURES_WATCH`). 
+ * 
+ * Body is expected as `application/x-www-form-urlencoded` with the following fields:
+ * - access-key
+ * - url
+ * - unfold-thread (optional)
+ * 
  * Assumes `fastify` is in scope.
  * 
  * @param {fastify.FastifyRequest} request
@@ -171,6 +182,7 @@ async function capture(request, reply) {
   // Process capture request
   //
   try {
+    // Add request to total and per-key counter
     CAPTURES_WATCH.currentTotal += 1;
 
     if (accessKey in CAPTURES_WATCH.currentByAccessKey) {
@@ -180,15 +192,27 @@ async function capture(request, reply) {
       CAPTURES_WATCH.currentByAccessKey[accessKey] = 1;
     }
 
-    const tweets = new TwitterCapture(data.url, {runBrowserBehaviors: "auto-scroll" in data});
+    const tweets = new TwitterCapture(data.url, {runBrowserBehaviors: "unfold-thread" in data});
     const pdf = await tweets.capture();
 
     successLog.add(accessKey, pdf);
 
+    // Generate a filename for the PDF based on url.
+    // Example: harvardlil-status-123456789-2022-11-25.pdf
+    const filename = (() => {
+      const url = new URL(tweets.url);
+
+      let filename = "twitter.com";      
+      filename += `${url.pathname}-`;
+      filename += `${(new Date()).toISOString().substring(0, 10)}`; // YYYY-MM-DD
+      filename = filename.replace(/[^a-z0-9]/gi, "-").toLowerCase();
+      return `${filename}.pdf`;
+    })();
+
     return reply
       .code(200)
       .header('Content-Type', 'application/pdf')
-      .header('Content-Disposition', 'attachment; filename="capture.pdf"')
+      .header('Content-Disposition', `attachment; filename="${filename}"`)
       .send(pdf);
   }
   catch(err) {
@@ -212,7 +236,27 @@ async function capture(request, reply) {
       CAPTURES_WATCH.currentByAccessKey[data["access-key"]] -= 1;
     }
   }
+}
 
+/**
+ * [GET] /check
+ * Shows the "check" page /check form. Loads certificates history files in the process.
+ * Assumes `fastify` is in scope.
+ * 
+ * @param {fastify.FastifyRequest} request
+ * @param {fastify.FastifyReply} reply 
+ * @returns {Promise<fastify.FastifyReply>}
+ */
+ async function check(request, reply) {
+  const html = nunjucks.render(`${TEMPLATES_PATH}check.njk`, {
+    signingCertsHistory: CertsHistory.load("signing"),
+    timestampsCertsHistory: CertsHistory.load("timestamping")
+  });
+
+  return reply
+    .code(200)
+    .header('Content-Type', 'text/html; charset=utf-8')
+    .send(html);
 }
 
 /**
@@ -238,25 +282,3 @@ async function checkHash(request, reply) {
   return reply.code(found ? 200 : 404).send();
 }
 
-export default async function (fastify, opts) {
-  // Adds support for `application/x-www-form-urlencoded`
-  fastify.register(import('@fastify/formbody'));
-
-  // Serves files from `STATIC_PATH`
-  fastify.register(import('@fastify/static'), {
-    root: STATIC_PATH,
-    prefix: '/static/',
-  });
-
-  // [GET] /
-  fastify.get('/', index);
-
-  // [GET] /check
-  fastify.get('/check', check);
-
-  // [POST] /
-  fastify.post('/', capture);
-
-  // [GET] /api/v1/hashes/check/:hash
-  fastify.get('/api/v1/hashes/check/:hash', checkHash);
-};
