@@ -1,9 +1,10 @@
 /**
  * thread-keeper
- * @module const.js
+ * @module const
  * @author The Harvard Library Innovation Lab
  * @license MIT
  */
+import fs from "fs";
 
 /**
  * Path to the folder holding the certificates used for signing the PDFs.
@@ -52,3 +53,12 @@ export const MAX_PARALLEL_CAPTURES_TOTAL = 200;
  * @constant
  */
 export const MAX_PARALLEL_CAPTURES_PER_ACCESS_KEY = 20;
+
+/**
+ * APP version. Pulled from `package.json` by default.
+ * @constant
+ */
+export const APP_VERSION = (() => {
+  const appPackage = JSON.parse(fs.readFileSync("./package.json"));
+  return appPackage?.version ? appPackage.version : "0.0.0";
+})();

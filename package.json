@@ -1,6 +1,6 @@
 {
   "name": "thread-keeper",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "",
   "main": "app.js",
   "type": "module",
@@ -10,7 +10,7 @@
     "postinstall": "cd scripts && bash download-yt-dlp.sh && bash pip-install.sh",
     "generate-dev-cert": "cd scripts && bash generate-dev-cert.sh",
     "docgen": "cd scripts && bash docgen.sh",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "cd scripts && bash generate-test-cert.sh && cd .. && export CERTS_PATH='./fixtures/certs/' && export DATA_PATH='./fixtures/data/' && npx tap --reporter=list --timeout=180"
   },
   "dependencies": {
     "@fastify/formbody": "^7.3.0",
@@ -86,5 +86,10 @@
   "bugs": {
     "url": "https://github.com/harvard-lil/thread-keeper/issues"
   },
-  "homepage": "https://github.com/harvard-lil/thread-keeper#readme"
+  "homepage": "https://github.com/harvard-lil/thread-keeper#readme",
+  "devDependencies": {
+    "is-html": "^3.0.0",
+    "pino-pretty": "^9.1.1",
+    "tap": "^16.3.2"
+  }
 }

@@ -43,8 +43,8 @@
           
         <fieldset class="submit">
           <span>
-            <input type="checkbox" name="auto-scroll" id="auto-scroll"/>
-            <label for="auto-scroll">Unfold thread</label>
+            <input type="checkbox" name="unfold-thread" id="unfold-thread"/>
+            <label for="unfold-thread">Unfold thread</label>
           </span>
 
           <button>Capture</button>
@@ -63,7 +63,7 @@
       </dialog>
 
       {% if error %}
-      <dialog id="form-error">
+      <dialog id="form-error" data-reason="{{ errorReason }}">
         <h2>Something went wrong</h2>
 
         {% if errorReason and errorReason == "ACCESS-KEY" %}
@@ -103,7 +103,9 @@
 
         <p>There are lots of screenshots of Twitter threads going around. Some are real, some are fake. You can't tell who made them, or when they were made.</p>
 
-        <p>PDFs let us apply document signatures and timestamps so anyone can check, in the future, that a PDF you download with this site really came from the Harvard Library Innovation Lab and hasn't been edited. PDFs also let us bundle in additional media as attachments. Each signed PDF currently includes all images in the page (so you can see full size images that are cropped in the PDF view) and the primary video on the page if any.</p>
+        <p>PDFs let us apply document signatures and timestamps so anyone can check, in the future, that a PDF you download with this site really came from the Harvard Library Innovation Lab and hasn't been edited.</p>
+        
+        <p>PDFs also let us bundle in additional media as attachments. Each signed PDF currently includes all images in the page (so you can see full size images that are cropped in the PDF view), the primary video on the page if any, as well as a list of all the t.co links on the thread and their actual destinations.</p>
 
         <h2>Why <em>not</em> make a PDF archiving tool for Twitter?</h2>
 

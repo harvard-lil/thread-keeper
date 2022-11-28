@@ -1,0 +1,259 @@
+/**
+ * thread-keeper
+ * @module server.test
+ * @author The Harvard Library Innovation Lab
+ * @license MIT
+ */
+import fs from "fs";
+import assert from "assert";
+import crypto from "crypto";
+
+import { test } from "tap";
+import Fastify from "fastify";
+import isHtml from "is-html";
+
+import { AccessKeys } from "./utils/index.js";
+
+import server, { CAPTURES_WATCH, successLog } from "./server.js";
+import { DATA_PATH, CERTS_PATH } from "./const.js";
+
+/**
+ * Access keys fixture.
+ * @type {{active: string[], inactive: string[]}}
+ */
+const ACCESS_KEYS = (() => {
+  const rawAccessKeys = JSON.parse(fs.readFileSync(AccessKeys.filepath));
+
+  const out = { active: [], inactive: [] };
+
+  for (let [key, value] of Object.entries(rawAccessKeys)) {
+    value === true ? out.active.push(key) : out.inactive.push(key);
+  }
+
+  return out;
+})();
+
+/**
+ * Dummy url of a thread to capture.
+ */
+const THREAD_URL = "https://twitter.com/HarvardLIL/status/1595150565428039680";
+
+test("Integration tests for server.js", async(t) => {
+
+  // Do not run tests if `CERTS_PATH` and `DATA_PATH` do not point to a `fixtures` folder
+  t.before((t) => {
+    try {
+      assert(DATA_PATH.includes("/fixtures/"));
+      assert(CERTS_PATH.includes("/fixtures/"));
+    }
+    catch(err) {
+      throw new Error("Test must be run against fixtures. Set CERTS_PATH and DATA_PATH env vars accordingly.");
+    }
+  });
+
+  test("[GET] / returns HTTP 200 + HTML", async (t) => {
+    const app = Fastify({logger: false});
+    await server(app, {});
+
+    const response = await app.inject({
+      method: "GET",
+      url: "/",
+    });
+
+    t.equal(response.statusCode, 200, "Server returns HTTP 200.");
+    t.type(isHtml(response.body), true, "Server serves HTML.");
+  });
+
+  test("[POST] / returns HTTP 401 + HTML on failed access key check.", async (t) => {
+    const app = Fastify({logger: false});
+    await server(app, {});
+
+    const scenarios = [
+      "FOO-BAR", // Invalid key
+      ACCESS_KEYS.inactive[0], // Inactive key
+      null // No key
+    ]
+
+    for (const accessKey of scenarios) {
+      const params = new URLSearchParams();
+
+      if (accessKey) {
+        params.append("access-key", accessKey);
+      }
+
+      const response = await app.inject({
+        method: "POST",
+        url: "/",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: params.toString(),
+      });
+
+      t.equal(response.statusCode, 401, "Server returns HTTP 401.");
+
+      const body = `${response.body}`;
+      t.type(isHtml(body), true, "Server serves HTML");
+      t.equal(body.includes(`data-reason="ACCESS-KEY"`), true, "With error message.");
+    }
+  });
+
+  test("[POST] / returns HTTP 400 + HTML on failed url check.", async (t) => {
+    const app = Fastify({logger: false});
+    await server(app, {});
+
+    const scenarios = [
+      "https://lil.law.harvard.edu", // Non-twitter
+      "twitter.com/harvardlil", // Non-url
+      12,
+      null // Nothing
+    ]
+
+    for (const url of scenarios) {
+      const params = new URLSearchParams();
+
+      params.append("access-key", ACCESS_KEYS.active[0]);
+
+      if (url) {
+        params.append("url", url);
+      }
+
+      const response = await app.inject({
+        method: "POST",
+        url: "/",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: params.toString(),
+      });
+    
+      t.equal(response.statusCode, 400, "Server returns HTTP 401.");
+      
+      const body = `${response.body}`;
+      t.type(isHtml(body), true, "Server serves HTML");
+      t.equal(body.includes(`data-reason="URL"`), true, "With error message.");
+    }
+  });
+
+  test("[POST] / returns HTTP 503 + HTML on failed server capacity check.", async (t) => {
+    const app = Fastify({logger: false});
+    await server(app, {});
+
+    CAPTURES_WATCH.currentTotal = CAPTURES_WATCH.maxTotal; // Simulate peak
+
+    const params = new URLSearchParams();
+    params.append("access-key", ACCESS_KEYS.active[0]);
+    params.append("url", THREAD_URL);
+
+    const response = await app.inject({
+      method: "POST",
+      url: "/",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: params.toString(),
+    });
+    
+    t.equal(response.statusCode, 503, "Server returns HTTP 503");
+      
+    const body = `${response.body}`;
+    t.type(isHtml(body), true, "Server serves HTML");
+    t.equal(body.includes(`TOO-MANY-CAPTURES-TOTAL`), true, "With error message.");
+
+    CAPTURES_WATCH.currentTotal = 0;
+  });
+
+  test("[POST] / returns HTTP 429 + HTML on user over parallel capture allowance.", async (t) => {
+    const app = Fastify({logger: false});
+    await server(app, {});
+
+    const userKey = ACCESS_KEYS.active[0];
+
+    CAPTURES_WATCH.currentByAccessKey[userKey] = CAPTURES_WATCH.maxPerAccessKey;
+
+    const params = new URLSearchParams();
+    params.append("access-key", userKey);
+    params.append("url", THREAD_URL);
+
+    const response = await app.inject({
+      method: "POST",
+      url: "/",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: params.toString(),
+    });
+    
+    t.equal(response.statusCode, 429, "Server returns HTTP 503.");
+      
+    const body = `${response.body}`;
+    t.type(isHtml(body), true, "Server serves HTML");
+    t.equal(body.includes(`TOO-MANY-CAPTURES-USER`), true, "With error message.");
+
+    delete CAPTURES_WATCH.currentByAccessKey[userKey];
+  });
+
+  test("[POST] / returns HTTP 200 + PDF", async (t) => {
+    const app = Fastify({logger: false});
+    await server(app, {});
+
+    const params = new URLSearchParams();
+    params.append("access-key", ACCESS_KEYS.active[0]);
+    params.append("url", THREAD_URL);
+    params.append("unfold-thread", "on");
+
+    const response = await app.inject({
+      method: "POST",
+      url: "/",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: params.toString(),
+    });
+
+    t.equal(response.statusCode, 200, "Server returns HTTP 200.");
+    t.equal(response.headers["content-type"], "application/pdf");
+    t.equal(response.headers["content-disposition"].startsWith("attachment"), true);
+    t.equal(response.body.substring(0, 8), "%PDF-1.7", "Server returns a PDF as attachment.");
+
+    // Check filename processing
+    const contentDisposition = response.headers["content-disposition"];
+    const filename = contentDisposition.substring(22, contentDisposition.length - 1);
+    t.match(filename, /^twitter-com-[a-z0-9-]+-[0-9]{4}-[0-9]{2}-[0-9]{2}\.pdf$/);
+  });
+
+  test("[GET] /check returns HTTP 200 + HTML", async (t) => {
+    const app = Fastify({logger: false});
+    await server(app, {});
+
+    const response = await app.inject({
+      method: "GET",
+      url: "/check",
+    });
+
+    t.equal(response.statusCode, 200, "Server returns HTTP 200.");
+    t.type(isHtml(response.body), true, "Server serves HTML.");
+  });
+
+  test("[GET] /api/v1/hashes/check/<sha512-hash> returns HTTP 404 on failed hash check.", async (t) => {
+    const app = Fastify({logger: false});
+    await server(app, {});
+
+    const randomHash = crypto.createHash('sha512').update(Buffer.from("HELLO WORLD")).digest('base64');
+
+    const response = await app.inject({
+      method: "GET",
+      url: `/api/v1/hashes/check/${encodeURIComponent(randomHash)}`,
+    });
+
+    t.equal(response.statusCode, 404, "Server returns HTTP 404.");
+  });
+
+  test("[GET] /api/v1/hashes/check/<sha512-hash> returns HTTP 200 on successful hash check.", async (t) => {
+    const app = Fastify({logger: false});
+    await server(app, {});
+
+    // Add entry to success logs
+    const toHash = Buffer.from(`${Date.now()}`);
+    const hash = crypto.createHash('sha512').update(toHash).digest('base64');
+    successLog.add(ACCESS_KEYS.active[0], toHash);
+
+    const response = await app.inject({
+      method: "GET",
+      url: `/api/v1/hashes/check/${encodeURIComponent(hash)}`,
+    });
+
+    t.equal(response.statusCode, 200, "Server returns HTTP 200.");
+  });
+
+});

@@ -1,84 +1,93 @@
-<a name="server.module_js"></a>
+<a name="module_server"></a>
 
-## js
+## server
 thread-keeper
 
 **Author**: The Harvard Library Innovation Lab  
 **License**: MIT  
 
-* [js](#server.module_js)
-    * [~successLog](#server.module_js..successLog) : <code>SuccessLog</code>
-    * [~accessKeys](#server.module_js..accessKeys) : <code>AccessKeys</code>
-    * [~CAPTURES_WATCH](#server.module_js..CAPTURES_WATCH) : <code>Object</code>
-    * [~index(request, reply)](#server.module_js..index) ⇒ <code>Promise.&lt;fastify.FastifyReply&gt;</code>
-    * [~check(request, reply)](#server.module_js..check) ⇒ <code>Promise.&lt;fastify.FastifyReply&gt;</code>
-    * [~capture(request, reply)](#server.module_js..capture) ⇒ <code>Promise.&lt;fastify.FastifyReply&gt;</code>
-    * [~checkHash(request, reply)](#server.module_js..checkHash) ⇒ <code>Promise.&lt;fastify.FastifyReply&gt;</code>
+* [server](#module_server)
+    * _static_
+        * [.successLog](#module_server.successLog) : <code>SuccessLog</code>
+        * [.CAPTURES_WATCH](#module_server.CAPTURES_WATCH) : <code>Object</code>
+    * _inner_
+        * [~accessKeys](#module_server..accessKeys) : <code>AccessKeys</code>
+        * [~index(request, reply)](#module_server..index) ⇒ <code>Promise.&lt;fastify.FastifyReply&gt;</code>
+        * [~capture(request, reply)](#module_server..capture) ⇒ <code>Promise.&lt;fastify.FastifyReply&gt;</code>
+        * [~check(request, reply)](#module_server..check) ⇒ <code>Promise.&lt;fastify.FastifyReply&gt;</code>
+        * [~checkHash(request, reply)](#module_server..checkHash) ⇒ <code>Promise.&lt;fastify.FastifyReply&gt;</code>
 
-<a name="server.module_js..successLog"></a>
+<a name="module_server.successLog"></a>
 
-### js~successLog : <code>SuccessLog</code>
-**Kind**: inner constant of [<code>js</code>](#server.module_js)  
-<a name="server.module_js..accessKeys"></a>
+### server.successLog : <code>SuccessLog</code>
+**Kind**: static constant of [<code>server</code>](#module_server)  
+<a name="module_server.CAPTURES_WATCH"></a>
 
-### js~accessKeys : <code>AccessKeys</code>
-**Kind**: inner constant of [<code>js</code>](#server.module_js)  
-<a name="server.module_js..CAPTURES_WATCH"></a>
-
-### js~CAPTURES\_WATCH : <code>Object</code>
+### server.CAPTURES\_WATCH : <code>Object</code>
 Keeps track of how many capture processes are currently running. 
 May be used to redirect users if over capacity. 
 
 [!] Only good for early prototyping.
 
-**Kind**: inner constant of [<code>js</code>](#server.module_js)  
-<a name="server.module_js..index"></a>
+**Kind**: static constant of [<code>server</code>](#module_server)  
+<a name="module_server..accessKeys"></a>
 
-### js~index(request, reply) ⇒ <code>Promise.&lt;fastify.FastifyReply&gt;</code>
-[GET] / 
-Shows the landing page / form.
+### server~accessKeys : <code>AccessKeys</code>
+**Kind**: inner constant of [<code>server</code>](#module_server)  
+<a name="module_server..index"></a>
+
+### server~index(request, reply) ⇒ <code>Promise.&lt;fastify.FastifyReply&gt;</code>
+[GET] /
+Shows the landing page and capture form.
 Assumes `fastify` is in scope.
 
-**Kind**: inner method of [<code>js</code>](#server.module_js)  
+**Kind**: inner method of [<code>server</code>](#module_server)  
 
 | Param | Type |
 | --- | --- |
 | request | <code>fastify.FastifyRequest</code> | 
 | reply | <code>fastify.FastifyReply</code> | 
 
-<a name="server.module_js..check"></a>
+<a name="module_server..capture"></a>
 
-### js~check(request, reply) ⇒ <code>Promise.&lt;fastify.FastifyReply&gt;</code>
-[GET] /check
-Shows the "check" page /check form. Loads certificates history files in the process.
-Assumes `fastify` is in scope.
-
-**Kind**: inner method of [<code>js</code>](#server.module_js)  
-
-| Param | Type |
-| --- | --- |
-| request | <code>fastify.FastifyRequest</code> | 
-| reply | <code>fastify.FastifyReply</code> | 
-
-<a name="server.module_js..capture"></a>
-
-### js~capture(request, reply) ⇒ <code>Promise.&lt;fastify.FastifyReply&gt;</code>
+### server~capture(request, reply) ⇒ <code>Promise.&lt;fastify.FastifyReply&gt;</code>
 [POST] `/`
 Processes a request to capture a `twitter.com` url. 
 Serves PDF bytes directly if operation is successful.
 Returns to form with specific error code, passed as `errorReason`, otherwise.
+Subject to captures rate limiting (see `CAPTURES_WATCH`). 
+
+Body is expected as `application/x-www-form-urlencoded` with the following fields:
+- access-key
+- url
+- unfold-thread (optional)
+
 Assumes `fastify` is in scope.
 
-**Kind**: inner method of [<code>js</code>](#server.module_js)  
+**Kind**: inner method of [<code>server</code>](#module_server)  
 
 | Param | Type |
 | --- | --- |
 | request | <code>fastify.FastifyRequest</code> | 
 | reply | <code>fastify.FastifyReply</code> | 
 
-<a name="server.module_js..checkHash"></a>
+<a name="module_server..check"></a>
 
-### js~checkHash(request, reply) ⇒ <code>Promise.&lt;fastify.FastifyReply&gt;</code>
+### server~check(request, reply) ⇒ <code>Promise.&lt;fastify.FastifyReply&gt;</code>
+[GET] /check
+Shows the "check" page /check form. Loads certificates history files in the process.
+Assumes `fastify` is in scope.
+
+**Kind**: inner method of [<code>server</code>](#module_server)  
+
+| Param | Type |
+| --- | --- |
+| request | <code>fastify.FastifyRequest</code> | 
+| reply | <code>fastify.FastifyReply</code> | 
+
+<a name="module_server..checkHash"></a>
+
+### server~checkHash(request, reply) ⇒ <code>Promise.&lt;fastify.FastifyReply&gt;</code>
 [GET] `/api/v1/hashes/check/<sha512-hash>`. 
 Checks if a given SHA512 hash is in the "success" logs, meaning this app created it. 
 Hash is passed as the last parameter, url encoded. 
@@ -86,7 +95,7 @@ Assumes `fastify` is in scope.
 
 Returns HTTP 200 if found, HTTP 404 if not.
 
-**Kind**: inner method of [<code>js</code>](#server.module_js)  
+**Kind**: inner method of [<code>server</code>](#module_server)  
 
 | Param | Type |
 | --- | --- |

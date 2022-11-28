@@ -25,6 +25,7 @@ thread-keeper
         * [.interceptJpegs](#utils.module_TwitterCapture.TwitterCapture+interceptJpegs) ⇒ <code>Promise.&lt;void&gt;</code>
         * [.generateRawPDF](#utils.module_TwitterCapture.TwitterCapture+generateRawPDF) ⇒ <code>Promise.&lt;Buffer&gt;</code>
         * [.addInterceptedJPEGsToPDF](#utils.module_TwitterCapture.TwitterCapture+addInterceptedJPEGsToPDF) ⇒ <code>Promise.&lt;void&gt;</code>
+        * [.captureAndAddUrlMapToPDF](#utils.module_TwitterCapture.TwitterCapture+captureAndAddUrlMapToPDF) ⇒ <code>Promise.&lt;void&gt;</code>
         * [.captureAndAddVideoToPDF](#utils.module_TwitterCapture.TwitterCapture+captureAndAddVideoToPDF) ⇒ <code>Promise.&lt;void&gt;</code>
         * [.cropMarginsOnPDF](#utils.module_TwitterCapture.TwitterCapture+cropMarginsOnPDF)
         * [.signPDF](#utils.module_TwitterCapture.TwitterCapture+signPDF) ⇒ <code>Buffer</code>
@@ -63,6 +64,7 @@ fs.writeFileSync("tweet.pdf", pdf);
     * [.interceptJpegs](#utils.module_TwitterCapture.TwitterCapture+interceptJpegs) ⇒ <code>Promise.&lt;void&gt;</code>
     * [.generateRawPDF](#utils.module_TwitterCapture.TwitterCapture+generateRawPDF) ⇒ <code>Promise.&lt;Buffer&gt;</code>
     * [.addInterceptedJPEGsToPDF](#utils.module_TwitterCapture.TwitterCapture+addInterceptedJPEGsToPDF) ⇒ <code>Promise.&lt;void&gt;</code>
+    * [.captureAndAddUrlMapToPDF](#utils.module_TwitterCapture.TwitterCapture+captureAndAddUrlMapToPDF) ⇒ <code>Promise.&lt;void&gt;</code>
     * [.captureAndAddVideoToPDF](#utils.module_TwitterCapture.TwitterCapture+captureAndAddVideoToPDF) ⇒ <code>Promise.&lt;void&gt;</code>
     * [.cropMarginsOnPDF](#utils.module_TwitterCapture.TwitterCapture+cropMarginsOnPDF)
     * [.signPDF](#utils.module_TwitterCapture.TwitterCapture+signPDF) ⇒ <code>Buffer</code>
@@ -88,10 +90,12 @@ Defaults for options that can be passed to `TwitterCapture`.
 
 | Name | Type | Description |
 | --- | --- | --- |
+| appVersion | <code>string</code> |  |
 | privateKeyPath | <code>string</code> | Path to `.pem` file containing a private key. |
 | certPath | <code>string</code> | Path to a `.pem` file containing a certificate. |
 | tmpFolderPath | <code>string</code> | Path to a folder in which temporary file can be written. |
 | ytDlpPath | <code>string</code> | Path to the `yt-dlp` executable. |
+| templatesFolderPath | <code>string</code> | Path to the templates folder (t.co resolver summary feature). |
 | timestampServerUrl | <code>string</code> | Timestamping server. |
 | networkidleTimeout | <code>number</code> | Time to wait for "networkidle" state. |
 | runBrowserBehaviors | <code>boolean</code> | If `true`, will try to auto-scroll and open more responses. Set to `false` automatically when trying to capture a profile url. |
@@ -195,6 +199,20 @@ Populates `this.pdf`.
 
 #### twitterCapture.addInterceptedJPEGsToPDF ⇒ <code>Promise.&lt;void&gt;</code>
 Adds entries from `this.interceptedJPEGs`
+
+**Kind**: instance property of [<code>TwitterCapture</code>](#utils.module_TwitterCapture.TwitterCapture)  
+
+| Type | Description |
+| --- | --- |
+| <code>PDFDocument</code> | Editable PDF object from `pdf-lib`. |
+
+<a name="utils.module_TwitterCapture.TwitterCapture+captureAndAddUrlMapToPDF"></a>
+
+#### twitterCapture.captureAndAddUrlMapToPDF ⇒ <code>Promise.&lt;void&gt;</code>
+Tries to list and resolve all the `t.co` urls on the page, and add the resulting map as an attachment.
+
+Attachment filename: `url-map.csv`.
+Playwright needs to be ready.
 
 **Kind**: instance property of [<code>TwitterCapture</code>](#utils.module_TwitterCapture.TwitterCapture)  
 
