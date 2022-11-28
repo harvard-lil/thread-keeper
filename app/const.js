@@ -62,5 +62,3 @@ export const APP_VERSION = (() => {
   const appPackage = JSON.parse(fs.readFileSync("./package.json"));
   return appPackage?.version ? appPackage.version : "0.0.0";
 })();
-
-console.log(APP_VERSION);
