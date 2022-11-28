@@ -71,7 +71,7 @@ And then add the key to `app/data/access-keys.json`:
 
 ```json
 {
-  "BB67BBC4-1F4B-4353-8E6D-9927A10F4509": true,
+  "BB67BBC4-1F4B-4353-8E6D-9927A10F4509": true
 }
 ```
 
