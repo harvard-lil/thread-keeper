@@ -8,5 +8,6 @@ import { IPBlockList } from "./IPBlockList.js";
 import { TwitterCapture } from "./TwitterCapture.js";
 import { SuccessLog } from "./SuccessLog.js";
 import { CertsHistory } from "./CertsHistory.js";
+import { AccessKeys } from "./AccessKeys.js";
 
-export { IPBlockList, SuccessLog, CertsHistory, TwitterCapture };
+export { AccessKeys, IPBlockList, SuccessLog, CertsHistory, TwitterCapture };

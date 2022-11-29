@@ -8,13 +8,15 @@ import assert from "assert";
 
 import nunjucks from "nunjucks";
 
-import { IPBlockList, CertsHistory, SuccessLog, TwitterCapture } from "./utils/index.js";
+import { AccessKeys, IPBlockList, CertsHistory, SuccessLog, TwitterCapture } from "./utils/index.js";
 import {
   TEMPLATES_PATH,
   STATIC_PATH,
   MAX_PARALLEL_CAPTURES_TOTAL,
   MAX_PARALLEL_CAPTURES_PER_IP,
+  REQUIRE_ACCESS_KEY
 } from "./const.js";
+
 
 /**
  * @type {SuccessLog}
@@ -25,6 +27,11 @@ export const successLog = new SuccessLog();
  * @type {IPBlockList}
  */
 const ipBlockList = new IPBlockList();
+
+/**
+ * @type {AccessKey}
+ */
+const accessKeys = new AccessKeys();
 
 /**
  * Fastify-cli options
@@ -52,7 +59,7 @@ export const CAPTURES_WATCH = {
   currentTotal: 0,
   maxTotal: MAX_PARALLEL_CAPTURES_TOTAL,
   currentByIp: {},
-  maxPerIp: MAX_PARALLEL_CAPTURES_PER_IP,
+  maxPerIp: MAX_PARALLEL_CAPTURES_PER_IP
 }
 
 export default async function (fastify, opts) {
@@ -89,7 +96,7 @@ export default async function (fastify, opts) {
  * @returns {Promise<fastify.FastifyReply>}
  */
 async function index(request, reply) {
-  const html = nunjucks.render(`${TEMPLATES_PATH}index.njk`);
+  const html = nunjucks.render(`${TEMPLATES_PATH}index.njk`, {REQUIRE_ACCESS_KEY});
 
   return reply
     .code(200)
@@ -106,6 +113,8 @@ async function index(request, reply) {
  * 
  * Body is expected as `application/x-www-form-urlencoded` with the following fields:
  * - url
+ * - why
+ * - access-key [If `REQUIRE_ACCESS_KEY` is enabled]
  * - unfold-thread (optional)
  * 
  * Assumes `fastify` is in scope.
@@ -118,6 +127,7 @@ async function capture(request, reply) {
   const data = request.body;
   const ip = request.ip;
   let why = null;
+  let accessKey = null;
 
   request.log.info(`Capture capacity: ${CAPTURES_WATCH.currentTotal} / ${CAPTURES_WATCH.maxTotal}.`);
 
@@ -127,13 +137,36 @@ async function capture(request, reply) {
   if (ipBlockList.check(ip)) {
     const html = nunjucks.render(`${TEMPLATES_PATH}index.njk`, {
       error: true,
-      errorReason: "IP"
+      errorReason: "IP",
+      REQUIRE_ACCESS_KEY
     });
 
     return reply
       .code(401)
       .header('Content-Type', 'text/html; charset=utf-8')
       .send(html);
+  }
+
+  //
+  // Check access key if required
+  //
+  if (REQUIRE_ACCESS_KEY) {
+    try {
+      accessKey = data["access-key"];
+      assert(accessKeys.check(accessKey));
+    }
+    catch(err) {
+      const html = nunjucks.render(`${TEMPLATES_PATH}index.njk`, {
+        error: true,
+        errorReason: "ACCESS-KEY",
+        REQUIRE_ACCESS_KEY
+      });
+
+      return reply
+      .code(401)
+      .header('Content-Type', 'text/html; charset=utf-8')
+      .send(html);
+    }
   }
 
   //
@@ -146,7 +179,8 @@ async function capture(request, reply) {
   catch(err) {
     const html = nunjucks.render(`${TEMPLATES_PATH}index.njk`, {
       error: true,
-      errorReason: "URL"
+      errorReason: "URL",
+      REQUIRE_ACCESS_KEY
     });
 
     return reply
@@ -165,7 +199,8 @@ async function capture(request, reply) {
   catch(err) {
     const html = nunjucks.render(`${TEMPLATES_PATH}index.njk`, {
       error: true,
-      errorReason: "WHY"
+      errorReason: "WHY",
+      REQUIRE_ACCESS_KEY
     });
 
     return reply
@@ -180,7 +215,8 @@ async function capture(request, reply) {
   if (CAPTURES_WATCH.currentTotal >= CAPTURES_WATCH.maxTotal) {
     const html = nunjucks.render(`${TEMPLATES_PATH}index.njk`, {
       error: true,
-      errorReason: "TOO-MANY-CAPTURES-TOTAL"
+      errorReason: "TOO-MANY-CAPTURES-TOTAL",
+      REQUIRE_ACCESS_KEY
     });
 
     return reply
@@ -195,7 +231,8 @@ async function capture(request, reply) {
   if (CAPTURES_WATCH.currentByIp[ip] >= CAPTURES_WATCH.maxPerIp) {
     const html = nunjucks.render(`${TEMPLATES_PATH}index.njk`, {
       error: true,
-      errorReason: "TOO-MANY-CAPTURES-USER"
+      errorReason: "TOO-MANY-CAPTURES-USER",
+      REQUIRE_ACCESS_KEY
     });
 
     return reply
@@ -221,7 +258,7 @@ async function capture(request, reply) {
     const tweets = new TwitterCapture(data.url, {runBrowserBehaviors: "unfold-thread" in data});
     const pdf = await tweets.capture();
 
-    successLog.add(ip, why, pdf);
+    successLog.add(REQUIRE_ACCESS_KEY ? accessKey : ip, why, pdf);
 
     // Generate a filename for the PDF based on url.
     // Example: harvardlil-status-123456789-2022-11-25.pdf
@@ -246,7 +283,8 @@ async function capture(request, reply) {
 
     const html = nunjucks.render(`${TEMPLATES_PATH}index.njk`, {
       error: true,
-      errorReason: "CAPTURE-ISSUE"
+      errorReason: "CAPTURE-ISSUE",
+      REQUIRE_ACCESS_KEY
     });
 
     return reply

@@ -13,6 +13,7 @@ thread-keeper
         * [.CAPTURES_WATCH](#module_server.CAPTURES_WATCH) : <code>Object</code>
     * _inner_
         * [~ipBlockList](#module_server..ipBlockList) : <code>IPBlockList</code>
+        * [~accessKeys](#module_server..accessKeys) : <code>AccessKey</code>
         * [~index(request, reply)](#module_server..index) ⇒ <code>Promise.&lt;fastify.FastifyReply&gt;</code>
         * [~capture(request, reply)](#module_server..capture) ⇒ <code>Promise.&lt;fastify.FastifyReply&gt;</code>
         * [~check(request, reply)](#module_server..check) ⇒ <code>Promise.&lt;fastify.FastifyReply&gt;</code>
@@ -41,6 +42,10 @@ May be used to redirect users if over capacity.
 
 ### server~ipBlockList : <code>IPBlockList</code>
 **Kind**: inner constant of [<code>server</code>](#module_server)  
+<a name="module_server..accessKeys"></a>
+
+### server~accessKeys : <code>AccessKey</code>
+**Kind**: inner constant of [<code>server</code>](#module_server)  
 <a name="module_server..index"></a>
 
 ### server~index(request, reply) ⇒ <code>Promise.&lt;fastify.FastifyReply&gt;</code>
@@ -66,6 +71,8 @@ Subject to captures rate limiting (see `CAPTURES_WATCH`).
 
 Body is expected as `application/x-www-form-urlencoded` with the following fields:
 - url
+- why
+- access-key [If `REQUIRE_ACCESS_KEY` is enabled]
 - unfold-thread (optional)
 
 Assumes `fastify` is in scope.

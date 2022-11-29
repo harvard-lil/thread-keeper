@@ -4,6 +4,7 @@
  * @author The Harvard Library Innovation Lab
  * @license MIT
  */
+import fs from "fs";
 import assert from "assert";
 import crypto from "crypto";
 
@@ -11,18 +12,36 @@ import { test } from "tap";
 import Fastify from "fastify";
 import isHtml from "is-html";
 
+import { AccessKeys } from "./utils/index.js";
+
 import server, { CAPTURES_WATCH, successLog } from "./server.js";
 import { DATA_PATH, CERTS_PATH } from "./const.js";
 
 /**
- * Dummy url of a thread to capture.
+ * Sample url of a thread to capture.
  */
 const THREAD_URL = "https://twitter.com/HarvardLIL/status/1595150565428039680";
 
 /**
- * Dummy reason for capture
+ * Sample reason for capture
  */
-const WHY = "Testing thread-keeper";
+const WHY = "Testing thread-keeper.";
+
+/**
+ * Access keys fixture.
+ * @type {{active: string[], inactive: string[]}}
+ */
+const ACCESS_KEYS = (() => {
+  const rawAccessKeys = JSON.parse(fs.readFileSync(AccessKeys.filepath));
+
+  const out = { active: [], inactive: [] };
+
+  for (let [key, value] of Object.entries(rawAccessKeys)) {
+    value === true ? out.active.push(key) : out.inactive.push(key);
+  }
+
+  return out;
+})();
 
 test("Integration tests for server.js", async(t) => {
 
@@ -48,6 +67,41 @@ test("Integration tests for server.js", async(t) => {
 
     t.equal(response.statusCode, 200, "Server returns HTTP 200.");
     t.type(isHtml(response.body), true, "Server serves HTML.");
+  });
+
+  // This assumes tests are run with the REQUIRE_ACCESS_KEY env var set to `1`.
+  test("[POST] / returns HTTP 401 + HTML on failed access key check.", async (t) => {
+    const app = Fastify({logger: false});
+    await server(app, {});
+
+    const scenarios = [
+      "FOO-BAR", // Invalid key
+      ACCESS_KEYS.inactive[0], // Inactive key
+      null // No key
+    ]
+
+    for (const accessKey of scenarios) {
+      const params = new URLSearchParams();
+      params.append("url", THREAD_URL);
+      params.append("why", WHY);
+
+      if (accessKey) {
+        params.append("access-key", accessKey);
+      }
+
+      const response = await app.inject({
+        method: "POST",
+        url: "/",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: params.toString(),
+      });
+
+      t.equal(response.statusCode, 401, "Server returns HTTP 401.");
+
+      const body = `${response.body}`;
+      t.type(isHtml(body), true, "Server serves HTML");
+      t.equal(body.includes(`data-reason="ACCESS-KEY"`), true, "With error message.");
+    }
   });
 
   test("[POST] / returns HTTP 401 + HTML on blocked IP check.", async (t) => {
@@ -78,10 +132,18 @@ test("Integration tests for server.js", async(t) => {
     const app = Fastify({logger: false});
     await server(app, {});
 
+    const params = new URLSearchParams();
+    params.append("why", WHY);
+    params.append("access-key", ACCESS_KEYS.active[0]);
+
     const response = await app.inject({
       method: "POST",
       url: "/",
       remoteAddress: "4.3.2.1",
+      headers: { 
+        "Content-Type": "application/x-www-form-urlencoded" 
+      },
+      body: params.toString()
     });
 
     // Should fail because no URL were passed, not because IP was blocked
@@ -101,6 +163,8 @@ test("Integration tests for server.js", async(t) => {
 
     for (const url of scenarios) {
       const params = new URLSearchParams();
+      params.append("why", WHY);
+      params.append("access-key", ACCESS_KEYS.active[0]);
 
       if (url) {
         params.append("url", url);
@@ -133,8 +197,8 @@ test("Integration tests for server.js", async(t) => {
 
     for (const why of scenarios) {
       const params = new URLSearchParams();
-
       params.append("url", THREAD_URL);
+      params.append("access-key", ACCESS_KEYS.active[0]);
 
       if (why) {
         params.append("why", why);
@@ -164,6 +228,7 @@ test("Integration tests for server.js", async(t) => {
     const params = new URLSearchParams();
     params.append("url", THREAD_URL);
     params.append("why", WHY);
+    params.append("access-key", ACCESS_KEYS.active[0]);
 
     const response = await app.inject({
       method: "POST",
@@ -191,6 +256,7 @@ test("Integration tests for server.js", async(t) => {
     const params = new URLSearchParams();
     params.append("url", THREAD_URL);
     params.append("why", WHY);
+    params.append("access-key", ACCESS_KEYS.active[0]);
 
     const response = await app.inject({
       method: "POST",
@@ -215,6 +281,7 @@ test("Integration tests for server.js", async(t) => {
     const params = new URLSearchParams();
     params.append("url", THREAD_URL);
     params.append("why", WHY);
+    params.append("access-key", ACCESS_KEYS.active[0]);
     params.append("unfold-thread", "on");
 
     const response = await app.inject({
