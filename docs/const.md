@@ -22,7 +22,7 @@ thread-keeper
 
 ### const.CERTS\_PATH
 Path to the folder holding the certificates used for signing the PDFs.
-Defaults to `./certs`
+Defaults to `./certs/`
 Can be replaced via the `CERTS_PATH` env variable.
 
 **Kind**: static constant of [<code>const</code>](#module_const)  
@@ -30,7 +30,7 @@ Can be replaced via the `CERTS_PATH` env variable.
 
 ### const.DATA\_PATH
 Path to the "data" folder.
-Defaults to `./app/data`
+Defaults to `./app/data/`
 Can be replaced via the `DATA_PATH` env variable.
 
 **Kind**: static constant of [<code>const</code>](#module_const)  
@@ -44,6 +44,8 @@ Path to the folder in which temporary files will be written by the app.
 
 ### const.TEMPLATES\_PATH
 Path to the "templates" folder.
+Defaults to `./app/templates/`
+Can be replaced via the `TEMPLATES_PATH` env variable.
 
 **Kind**: static constant of [<code>const</code>](#module_const)  
 <a name="module_const.EXECUTABLES_FOLDER"></a>

@@ -8,7 +8,7 @@ import fs from "fs";
 
 /**
  * Path to the folder holding the certificates used for signing the PDFs.
- * Defaults to `./certs`
+ * Defaults to `./certs/`
  * Can be replaced via the `CERTS_PATH` env variable.
  * @constant
  */
@@ -16,7 +16,7 @@ export const CERTS_PATH = process.env.CERTS_PATH ? process.env.CERTS_PATH : `${p
 
 /**
  * Path to the "data" folder.
- * Defaults to `./app/data`
+ * Defaults to `./app/data/`
  * Can be replaced via the `DATA_PATH` env variable.
  * @constant
  */
@@ -30,7 +30,7 @@ export const TMP_PATH = `${process.env.PWD}/app/tmp/`;
 
 /**
  * Path to the "templates" folder.
- * Defaults to `./app/templates`
+ * Defaults to `./app/templates/`
  * Can be replaced via the `TEMPLATES_PATH` env variable.
  * @constant
  */
