@@ -8,14 +8,19 @@ import assert from "assert";
 
 import nunjucks from "nunjucks";
 
-import { AccessKeys, CertsHistory, SuccessLog, TwitterCapture } from "./utils/index.js";
+import { AccessKeys, IPBlockList, CertsHistory, SuccessLog, TwitterCapture } from "./utils/index.js";
 import {
   TEMPLATES_PATH,
   STATIC_PATH,
   MAX_PARALLEL_CAPTURES_TOTAL,
-  MAX_PARALLEL_CAPTURES_PER_ACCESS_KEY,
+  MAX_PARALLEL_CAPTURES_PER_IP,
+  REQUIRE_ACCESS_KEY
 } from "./const.js";
 
+/**
+ * @type {nunjucks.Environment}
+ */
+const nunjucksEnv = new nunjucks.Environment(new nunjucks.FileSystemLoader(TEMPLATES_PATH));
 
 /**
  * @type {SuccessLog}
@@ -23,9 +28,23 @@ import {
 export const successLog = new SuccessLog();
 
 /**
+ * @type {IPBlockList}
+ */
+const ipBlockList = new IPBlockList();
+
+/**
  * @type {AccessKeys}
  */
 const accessKeys = new AccessKeys();
+
+/**
+ * Fastify-cli options
+ * @constant
+ */
+export const options = {
+  trustProxy: true,
+  logger: true
+}
 
 /**
  * Keeps track of how many capture processes are currently running. 
@@ -36,15 +55,15 @@ const accessKeys = new AccessKeys();
  * @type {{
  *  currentTotal: number, 
  *  maxTotal: number, 
- *  currentByAccessKey: object.<string, number>, 
- *  maxPerAccessKey: number
+ *  currentByIp: object.<string, number>, 
+ *  maxPerIp: number
  * }}
  */
 export const CAPTURES_WATCH = {
   currentTotal: 0,
   maxTotal: MAX_PARALLEL_CAPTURES_TOTAL,
-  currentByAccessKey: {},
-  maxPerAccessKey: MAX_PARALLEL_CAPTURES_PER_ACCESS_KEY,
+  currentByIp: {},
+  maxPerIp: MAX_PARALLEL_CAPTURES_PER_IP
 }
 
 export default async function (fastify, opts) {
@@ -60,17 +79,16 @@ export default async function (fastify, opts) {
     reply
       .code(404)
       .type('text/html')
-      .send(nunjucks.render(`${TEMPLATES_PATH}404.njk`));
+      .send(nunjucksEnv.render(`404.njk`));
   });
 
   fastify.get('/', index);
   fastify.post('/', capture);
 
   fastify.get('/check', check);
-  
+
   fastify.get('/api/v1/hashes/check/:hash', checkHash);
 };
-
 
 /**
  * [GET] /
@@ -82,7 +100,7 @@ export default async function (fastify, opts) {
  * @returns {Promise<fastify.FastifyReply>}
  */
 async function index(request, reply) {
-  const html = nunjucks.render(`${TEMPLATES_PATH}index.njk`);
+  const html = nunjucksEnv.render(`index.njk`, {REQUIRE_ACCESS_KEY});
 
   return reply
     .code(200)
@@ -98,8 +116,9 @@ async function index(request, reply) {
  * Subject to captures rate limiting (see `CAPTURES_WATCH`). 
  * 
  * Body is expected as `application/x-www-form-urlencoded` with the following fields:
- * - access-key
  * - url
+ * - why
+ * - access-key [If `REQUIRE_ACCESS_KEY` is enabled]
  * - unfold-thread (optional)
  * 
  * Assumes `fastify` is in scope.
@@ -110,23 +129,48 @@ async function index(request, reply) {
  */
 async function capture(request, reply) {
   const data = request.body;
-  const accessKey = data["access-key"];
-  
+  const ip = request.ip;
+  let why = null;
+  let accessKey = null;
+
   request.log.info(`Capture capacity: ${CAPTURES_WATCH.currentTotal} / ${CAPTURES_WATCH.maxTotal}.`);
-  
+
   //
-  // Check access key
+  // Check that IP is not in block list
   //
-  if (!accessKeys.check(accessKey)) {
-    const html = nunjucks.render(`${TEMPLATES_PATH}index.njk`, {
+  if (ipBlockList.check(ip)) {
+    const html = nunjucksEnv.render(`index.njk`, {
       error: true,
-      errorReason: "ACCESS-KEY"
+      errorReason: "IP",
+      REQUIRE_ACCESS_KEY
     });
 
     return reply
       .code(401)
       .header('Content-Type', 'text/html; charset=utf-8')
       .send(html);
+  }
+
+  //
+  // Check access key if required
+  //
+  if (REQUIRE_ACCESS_KEY) {
+    try {
+      accessKey = data["access-key"];
+      assert(accessKeys.check(accessKey));
+    }
+    catch(err) {
+      const html = nunjucksEnv.render(`index.njk`, {
+        error: true,
+        errorReason: "ACCESS-KEY",
+        REQUIRE_ACCESS_KEY
+      });
+
+      return reply
+      .code(401)
+      .header('Content-Type', 'text/html; charset=utf-8')
+      .send(html);
+    }
   }
 
   //
@@ -137,9 +181,30 @@ async function capture(request, reply) {
     assert(url.origin === "https://twitter.com");
   }
   catch(err) {
-    const html = nunjucks.render(`${TEMPLATES_PATH}index.njk`, {
+    const html = nunjucksEnv.render(`index.njk`, {
       error: true,
-      errorReason: "URL"
+      errorReason: "URL",
+      REQUIRE_ACCESS_KEY
+    });
+
+    return reply
+      .code(400)
+      .header('Content-Type', 'text/html; charset=utf-8')
+      .send(html);
+  }
+
+  //
+  // Check "why" field
+  //
+  try {
+    why = data.why.trim();
+    assert(why.length > 0);
+  }
+  catch(err) {
+    const html = nunjucksEnv.render(`index.njk`, {
+      error: true,
+      errorReason: "WHY",
+      REQUIRE_ACCESS_KEY
     });
 
     return reply
@@ -152,9 +217,10 @@ async function capture(request, reply) {
   // Check that there is still capture capacity (total)
   //
   if (CAPTURES_WATCH.currentTotal >= CAPTURES_WATCH.maxTotal) {
-    const html = nunjucks.render(`${TEMPLATES_PATH}index.njk`, {
+    const html = nunjucksEnv.render(`index.njk`, {
       error: true,
-      errorReason: "TOO-MANY-CAPTURES-TOTAL"
+      errorReason: "TOO-MANY-CAPTURES-TOTAL",
+      REQUIRE_ACCESS_KEY
     });
 
     return reply
@@ -164,12 +230,13 @@ async function capture(request, reply) {
   }
 
   //
-  // Check that there is still capture capacity (for this access key)
+  // Check that there is still capture capacity (for this IP)
   //
-  if (CAPTURES_WATCH.currentByAccessKey[accessKey] >= CAPTURES_WATCH.maxPerAccessKey) {
-    const html = nunjucks.render(`${TEMPLATES_PATH}index.njk`, {
+  if (CAPTURES_WATCH.currentByIp[ip] >= CAPTURES_WATCH.maxPerIp) {
+    const html = nunjucksEnv.render(`index.njk`, {
       error: true,
-      errorReason: "TOO-MANY-CAPTURES-USER"
+      errorReason: "TOO-MANY-CAPTURES-USER",
+      REQUIRE_ACCESS_KEY
     });
 
     return reply
@@ -182,20 +249,20 @@ async function capture(request, reply) {
   // Process capture request
   //
   try {
-    // Add request to total and per-key counter
+    // Add request to total and per-IP counter
     CAPTURES_WATCH.currentTotal += 1;
 
-    if (accessKey in CAPTURES_WATCH.currentByAccessKey) {
-      CAPTURES_WATCH.currentByAccessKey[accessKey] += 1;
+    if (ip in CAPTURES_WATCH.currentByIp) {
+      CAPTURES_WATCH.currentByIp[ip] += 1;
     }
     else {
-      CAPTURES_WATCH.currentByAccessKey[accessKey] = 1;
+      CAPTURES_WATCH.currentByIp[ip] = 1;
     }
 
     const tweets = new TwitterCapture(data.url, {runBrowserBehaviors: "unfold-thread" in data});
     const pdf = await tweets.capture();
 
-    successLog.add(accessKey, pdf);
+    successLog.add(REQUIRE_ACCESS_KEY ? accessKey : ip, why, pdf);
 
     // Generate a filename for the PDF based on url.
     // Example: harvardlil-status-123456789-2022-11-25.pdf
@@ -218,9 +285,10 @@ async function capture(request, reply) {
   catch(err) {
     request.log.error(`Capture failed. ${err}`);
 
-    const html = nunjucks.render(`${TEMPLATES_PATH}index.njk`, {
+    const html = nunjucksEnv.render(`index.njk`, {
       error: true,
-      errorReason: "CAPTURE-ISSUE"
+      errorReason: "CAPTURE-ISSUE",
+      REQUIRE_ACCESS_KEY
     });
 
     return reply
@@ -232,8 +300,8 @@ async function capture(request, reply) {
   finally {
     CAPTURES_WATCH.currentTotal -= 1;
 
-    if (accessKey && accessKey in CAPTURES_WATCH.currentByAccessKey) {
-      CAPTURES_WATCH.currentByAccessKey[data["access-key"]] -= 1;
+    if (ip && ip in CAPTURES_WATCH.currentByIp) {
+      CAPTURES_WATCH.currentByIp[ip] -= 1;
     }
   }
 }
@@ -248,7 +316,7 @@ async function capture(request, reply) {
  * @returns {Promise<fastify.FastifyReply>}
  */
  async function check(request, reply) {
-  const html = nunjucks.render(`${TEMPLATES_PATH}check.njk`, {
+  const html = nunjucksEnv.render(`check.njk`, {
     signingCertsHistory: CertsHistory.load("signing"),
     timestampsCertsHistory: CertsHistory.load("timestamping")
   });

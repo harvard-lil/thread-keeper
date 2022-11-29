@@ -10,7 +10,7 @@ thread-keeper
     * [.SuccessLog](#utils.module_SuccessLog.SuccessLog)
         * [new exports.SuccessLog()](#new_utils.module_SuccessLog.SuccessLog_new)
         * [.filepath](#utils.module_SuccessLog.SuccessLog+filepath) : <code>string</code>
-        * [.add(accessKey, pdfBytes)](#utils.module_SuccessLog.SuccessLog+add)
+        * [.add(identifier, why, pdfBytes)](#utils.module_SuccessLog.SuccessLog+add)
         * [.findHashInLogs(hash)](#utils.module_SuccessLog.SuccessLog+findHashInLogs) ⇒ <code>boolean</code>
         * [.reset()](#utils.module_SuccessLog.SuccessLog+reset) ⇒ <code>void</code>
 
@@ -24,7 +24,7 @@ Utility class for handling success logs. Keeps trace of the hashes of the PDFs t
 * [.SuccessLog](#utils.module_SuccessLog.SuccessLog)
     * [new exports.SuccessLog()](#new_utils.module_SuccessLog.SuccessLog_new)
     * [.filepath](#utils.module_SuccessLog.SuccessLog+filepath) : <code>string</code>
-    * [.add(accessKey, pdfBytes)](#utils.module_SuccessLog.SuccessLog+add)
+    * [.add(identifier, why, pdfBytes)](#utils.module_SuccessLog.SuccessLog+add)
     * [.findHashInLogs(hash)](#utils.module_SuccessLog.SuccessLog+findHashInLogs) ⇒ <code>boolean</code>
     * [.reset()](#utils.module_SuccessLog.SuccessLog+reset) ⇒ <code>void</code>
 
@@ -43,7 +43,7 @@ Complete path to `success-log.json`.
 **Kind**: instance property of [<code>SuccessLog</code>](#utils.module_SuccessLog.SuccessLog)  
 <a name="utils.module_SuccessLog.SuccessLog+add"></a>
 
-#### successLog.add(accessKey, pdfBytes)
+#### successLog.add(identifier, why, pdfBytes)
 Calculates hash of a PDF an:
 - Creates a success log entry
 - Updates `this.#hashes` (so it doesn't need to reload from file)
@@ -52,7 +52,8 @@ Calculates hash of a PDF an:
 
 | Param | Type | Description |
 | --- | --- | --- |
-| accessKey | <code>string</code> |  |
+| identifier | <code>string</code> | Can be an IP or access key |
+| why | <code>string</code> | Reason for creating this archive |
 | pdfBytes | <code>Buffer</code> | Used to store a SHA512 hash of the PDF that was delivered |
 
 <a name="utils.module_SuccessLog.SuccessLog+findHashInLogs"></a>

@@ -16,6 +16,8 @@ An experiment of the [Harvard Library Innovation Lab](https://lil.law.harvard.ed
 - [Local development](#local-development)
 - [Dev CLI](#dev-cli)
 - [Code docs](/docs)
+- [Environment variables](#environment-variables)
+- [Access Keys System](#access-keys-system)
 
 ---
 
@@ -57,22 +59,6 @@ npm install # To install npm packages
 npx playwright install chrome # To ensure Playwright has a version of Chrome to talk to
 npm run generate-dev-cert # Will generate a certificate for self-signing PDFs. For testing purposes only.
 npm run dev # Starts the development server on port 3000
-```
-
-### Access keys
-Create an access key to test with:
-
-```bash
-$ uuidgen
-BB67BBC4-1F4B-4353-8E6D-9927A10F4509
-```
-
-And then add the key to `app/data/access-keys.json`:
-
-```json
-{
-  "BB67BBC4-1F4B-4353-8E6D-9927A10F4509": true
-}
 ```
 
 ### Certificates history
@@ -141,3 +127,43 @@ Runs the test suite. Requires test fixtures _(see `fixtures` folder)_.
 
 [☝️ Back to summary](#summary)
 
+
+---
+
+## Environment variables
+
+| Name | Required? | Description |
+| --- | --- | --- |
+| `CERTS_PATH` | No | If set, will be used as path to `.pem` files used for signing .PDF files. |
+| `DATA_PATH` | No | If set, will be used as path to folder used for storing app data. |
+| `TEMPLATES_PATH` | No | If set, will be used as a templates path. Can be used to replace the website's UI with a custom one. |
+| `REQUIRE_ACCESS_KEY` | No | If set and `"1"`, an access key will be required to make capture. |
+| `MAX_PARALLEL_CAPTURES_TOTAL` | No | If set and contains an integer, determines the maximum of captures that the server can run in parallel. |
+| `MAX_PARALLEL_CAPTURES_PER_IP` | No | If set and contains an integer, determines the maximum of captures that a single client can run in parallel. |
+
+[☝️ Back to summary](#summary)
+
+---
+
+## Access keys system
+
+If the `REQUIRE_ACCESS_KEY` environment variable is on, users will be required to use an access key to make captures. 
+
+Keys can be stored in a file named `access-key.json` under the _"data"_ folder.
+
+**Example: `app/data/access-keys.json`:**
+```json
+{
+  "BB67BBC4-1F4B-4353-8E6D-9927A10F4509": true
+}
+```
+
+### Create an access key to test with:
+
+```bash
+$ uuidgen
+BB67BBC4-1F4B-4353-8E6D-9927A10F4509
+```
+
+
+[☝️ Back to summary](#summary)

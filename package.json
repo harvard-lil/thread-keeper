@@ -1,16 +1,16 @@
 {
   "name": "thread-keeper",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "",
   "main": "app.js",
   "type": "module",
   "scripts": {
     "start": "fastify start app/server.js -l warn",
-    "dev": "fastify start app/server.js -l info -w",
+    "dev": "fastify start app/server.js -l info -w -P",
     "postinstall": "cd scripts && bash download-yt-dlp.sh && bash pip-install.sh",
     "generate-dev-cert": "cd scripts && bash generate-dev-cert.sh",
     "docgen": "cd scripts && bash docgen.sh",
-    "test": "cd scripts && bash generate-test-cert.sh && cd .. && export CERTS_PATH='./fixtures/certs/' && export DATA_PATH='./fixtures/data/' && npx tap --reporter=list --timeout=180"
+    "test": "cd scripts && bash generate-test-cert.sh && cd .. && export CERTS_PATH='./fixtures/certs/' && export DATA_PATH='./fixtures/data/' && export REQUIRE_ACCESS_KEY='1' && npx tap --reporter=list --timeout=180"
   },
   "dependencies": {
     "@fastify/formbody": "^7.3.0",

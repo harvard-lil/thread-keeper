@@ -33,12 +33,19 @@
                  required>
         </fieldset>
 
+        {% if REQUIRE_ACCESS_KEY %}
         <fieldset>
           <label for="access-key">Access key <a href="https://ocb.to/archive-social-form" title="Access key request form">(request access)</a></label>
           <input type="password" 
                  name="access-key" 
                  id="access-key"
                  required>
+        </fieldset>
+        {% endif %}
+
+        <fieldset>
+          <label for="why">Reason for archiving <a href="#why-faq">(why this question?)</a></label>
+          <textarea required name="why" id="why" rows="2"></textarea>
         </fieldset>
           
         <fieldset class="submit">
@@ -67,11 +74,19 @@
         <h2>Something went wrong</h2>
 
         {% if errorReason and errorReason == "ACCESS-KEY" %}
-        <p>The access key provided is invalid or no longer active.</p>
+        <p>Access key provided is invalid or inactive.</p>
+        {% endif %}
+
+        {% if errorReason and errorReason == "IP" %}
+        <p>Your access to this service has been restricted.</p>
         {% endif %}
 
         {% if errorReason and errorReason == "URL" %}
         <p>The url provided is not a valid twitter.com url.</p>
+        {% endif %}
+
+        {% if errorReason and errorReason == "WHY" %}
+        <p>Please tell us why you would like to archive this twitter.com url.</p>
         {% endif %}
 
         {% if errorReason and errorReason == "TOO-MANY-CAPTURES-TOTAL" %}
@@ -79,7 +94,7 @@
         {% endif %}
 
         {% if errorReason and errorReason == "TOO-MANY-CAPTURES-USER" %}
-        <p>Please wait until the capture requests you've started are completed before starting a new one.</p>
+        <p>Too many requests for your IP address. Please retry in a minute.</p>
         {% endif %}
 
         {% if errorReason and errorReason == "CAPTURE-ISSUE" %}
@@ -95,9 +110,11 @@
 
         <p>This site is an experiment by the <a href="https://lil.law.harvard.edu">Harvard Library Innovation Lab</a> to let you download signed PDFs of Twitter URLs. <a href="/static/example.pdf">Here's an example PDF</a> we made from <a href="https://twitter.com/doctorow/status/1591759999323492358">this tweet</a>.</p>
 
+        {% if REQUIRE_ACCESS_KEY %}
         <h2>Who can use it?</h2>
 
         <p>To use our website <a href="https://ocb.to/archive-social-form">you'll need to contact us</a> for an API key. We're currently only able to share a limited number with people like journalists, internet scholars, and archivists. But you can also use <a href="https://github.com/harvard-lil/thread-keeper">our open source software</a> to stand up an archive server of your own, and share it with your friends.</p>
+        {% endif %}
 
         <h2>Why make a PDF archiving tool for Twitter?</h2>
 
@@ -112,6 +129,10 @@
         <p>Not everything on Twitter wants to be archived! On Twitter all kinds of conversations happen at different levels of privacy in the same public space. Some tweets want to be quiet; some want to be forgotten; some are by public figures or have public impact or sentimental value and want to be kept around. Please think carefully about what you choose to preserve.</p>
 
         <p>Library nerd note: societies create much more data than they can save. "Thinking carefully about what you choose to preserve" is part of the practice of archiving. By doing it, you're helping to form our shared cultural memory.</p>
+
+        <h2 id="why-faq">Why do you ask the reason for archiving?</h2>
+        
+        <p>At the Library Innovation Lab, we build experiments like this to explore what's most important to save in the cultural record and how we can save it. Your answer will help us understand whether this tool is serving its purpose, who it's helping, and what other features it might need. Feel free to provide as much or as little detail as you want about who you are and what you're trying to accomplish. Including the same answer each time is fine.</p>
 
         <h2>How do you make these PDFs (and why does it take so long)?</h2>
 
@@ -134,6 +155,10 @@
         <p>Well … no. Library folks like to talk about "authenticity" and "provenance". A signature on a PDF tells you its <em>provenance</em>: you can prove that you really got the PDF from us, and that we couldn't have created it after a certain date. You'll then have to decide whether you trust our claim that the PDF we gave you represents a real page we saw on Twitter (and that no one else has messed with our servers). If someone else gives you a signed PDF, they're giving you a different provenance chain, and you can trace that back to decide who you're being asked to trust.</p>
 
         <p>Tech nerd note: This whole trust step is needed because of something called <em>repudiability</em>: https web transactions are deliberately designed to be repudiable, meaning there's no way to tell as a third party after the fact whether they ever really happened. Signed HTTP exchanges are one proposal that may eventually let websites choose to publish verifiable content instead, but they aren't here yet. So for now, you're left deciding whether "social.perma.cc" is an intermediary you want to choose to trust.</p>
+
+        <h2>Is the code for this site available?</h2>
+
+        <p>Yes! Code for this site is published under an open license <a href="https://github.com/harvard-lil/thread-keeper">on GitHub</a>. We encourage you to run your own instance of the server — remembering that if you run it, you'll be the one asserting provenance of the resulting PDF files.</p>
 
         <h2>What is your privacy policy?</h2>
 

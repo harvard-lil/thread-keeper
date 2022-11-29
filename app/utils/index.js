@@ -4,9 +4,10 @@
  * @author The Harvard Library Innovation Lab
  * @license MIT
  */
-import { AccessKeys } from "./AccessKeys.js";
+import { IPBlockList } from "./IPBlockList.js";
 import { TwitterCapture } from "./TwitterCapture.js";
 import { SuccessLog } from "./SuccessLog.js";
 import { CertsHistory } from "./CertsHistory.js";
+import { AccessKeys } from "./AccessKeys.js";
 
-export { AccessKeys, SuccessLog, CertsHistory, TwitterCapture };
+export { AccessKeys, IPBlockList, SuccessLog, CertsHistory, TwitterCapture };
