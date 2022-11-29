@@ -5,8 +5,8 @@
   "main": "app.js",
   "type": "module",
   "scripts": {
-    "start": "fastify start app/server.js -l warn",
-    "dev": "fastify start app/server.js -l info -w -P",
+    "start": "fastify start app/server.js -l warn --options",
+    "dev": "fastify start app/server.js -l info -w -P --options",
     "postinstall": "cd scripts && bash download-yt-dlp.sh && bash pip-install.sh",
     "generate-dev-cert": "cd scripts && bash generate-dev-cert.sh",
     "docgen": "cd scripts && bash docgen.sh",
