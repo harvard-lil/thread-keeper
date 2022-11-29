@@ -14,7 +14,7 @@ thread-keeper
     * _inner_
         * [~nunjucksEnv](#module_server..nunjucksEnv) : <code>nunjucks.Environment</code>
         * [~ipBlockList](#module_server..ipBlockList) : <code>IPBlockList</code>
-        * [~accessKeys](#module_server..accessKeys) : <code>AccessKey</code>
+        * [~accessKeys](#module_server..accessKeys) : <code>AccessKeys</code>
         * [~index(request, reply)](#module_server..index) ⇒ <code>Promise.&lt;fastify.FastifyReply&gt;</code>
         * [~capture(request, reply)](#module_server..capture) ⇒ <code>Promise.&lt;fastify.FastifyReply&gt;</code>
         * [~check(request, reply)](#module_server..check) ⇒ <code>Promise.&lt;fastify.FastifyReply&gt;</code>
@@ -49,7 +49,7 @@ May be used to redirect users if over capacity.
 **Kind**: inner constant of [<code>server</code>](#module_server)  
 <a name="module_server..accessKeys"></a>
 
-### server~accessKeys : <code>AccessKey</code>
+### server~accessKeys : <code>AccessKeys</code>
 **Kind**: inner constant of [<code>server</code>](#module_server)  
 <a name="module_server..index"></a>
 

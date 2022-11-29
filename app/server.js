@@ -33,7 +33,7 @@ export const successLog = new SuccessLog();
 const ipBlockList = new IPBlockList();
 
 /**
- * @type {AccessKey}
+ * @type {AccessKeys}
  */
 const accessKeys = new AccessKeys();
 
