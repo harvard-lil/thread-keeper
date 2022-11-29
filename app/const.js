@@ -30,9 +30,11 @@ export const TMP_PATH = `${process.env.PWD}/app/tmp/`;
 
 /**
  * Path to the "templates" folder.
+ * Defaults to `./app/templates`
+ * Can be replaced via the `TEMPLATES_PATH` env variable.
  * @constant
  */
-export const TEMPLATES_PATH = `${process.env.PWD}/app/templates/`;
+export const TEMPLATES_PATH = process.env.TEMPLATES_PATH ? process.env.TEMPLATES_PATH : `${process.env.PWD}/app/templates/`;
 
 /**
  * Path to the "executables" folder, for dependencies that are meant to be executed directly, such as `yt-dlp`.

@@ -136,6 +136,7 @@ Runs the test suite. Requires test fixtures _(see `fixtures` folder)_.
 | --- | --- | --- |
 | `CERTS_PATH` | No | If set, will be used as path to `.pem` files used for signing .PDF files. |
 | `DATA_PATH` | No | If set, will be used as path to folder used for storing app data. |
+| `TEMPLATES_PATH` | No | If set, will be used as a templates path. Can be used to replace the website's UI with a custom one. |
 | `REQUIRE_ACCESS_KEY` | No | If set and `"1"`, an access key will be required to make capture. |
 | `MAX_PARALLEL_CAPTURES_TOTAL` | No | If set and contains an integer, determines the maximum of captures that the server can run in parallel. |
 | `MAX_PARALLEL_CAPTURES_PER_IP` | No | If set and contains an integer, determines the maximum of captures that a single client can run in parallel. |

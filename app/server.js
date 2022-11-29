@@ -17,6 +17,10 @@ import {
   REQUIRE_ACCESS_KEY
 } from "./const.js";
 
+/**
+ * @type {nunjucks.Environment}
+ */
+const nunjucksEnv = new nunjucks.Environment(new nunjucks.FileSystemLoader(TEMPLATES_PATH));
 
 /**
  * @type {SuccessLog}
@@ -75,7 +79,7 @@ export default async function (fastify, opts) {
     reply
       .code(404)
       .type('text/html')
-      .send(nunjucks.render(`${TEMPLATES_PATH}404.njk`));
+      .send(nunjucksEnv.render(`404.njk`));
   });
 
   fastify.get('/', index);
@@ -96,7 +100,7 @@ export default async function (fastify, opts) {
  * @returns {Promise<fastify.FastifyReply>}
  */
 async function index(request, reply) {
-  const html = nunjucks.render(`${TEMPLATES_PATH}index.njk`, {REQUIRE_ACCESS_KEY});
+  const html = nunjucksEnv.render(`index.njk`, {REQUIRE_ACCESS_KEY});
 
   return reply
     .code(200)
@@ -135,7 +139,7 @@ async function capture(request, reply) {
   // Check that IP is not in block list
   //
   if (ipBlockList.check(ip)) {
-    const html = nunjucks.render(`${TEMPLATES_PATH}index.njk`, {
+    const html = nunjucksEnv.render(`index.njk`, {
       error: true,
       errorReason: "IP",
       REQUIRE_ACCESS_KEY
@@ -156,7 +160,7 @@ async function capture(request, reply) {
       assert(accessKeys.check(accessKey));
     }
     catch(err) {
-      const html = nunjucks.render(`${TEMPLATES_PATH}index.njk`, {
+      const html = nunjucksEnv.render(`index.njk`, {
         error: true,
         errorReason: "ACCESS-KEY",
         REQUIRE_ACCESS_KEY
@@ -177,7 +181,7 @@ async function capture(request, reply) {
     assert(url.origin === "https://twitter.com");
   }
   catch(err) {
-    const html = nunjucks.render(`${TEMPLATES_PATH}index.njk`, {
+    const html = nunjucksEnv.render(`index.njk`, {
       error: true,
       errorReason: "URL",
       REQUIRE_ACCESS_KEY
@@ -197,7 +201,7 @@ async function capture(request, reply) {
     assert(why.length > 0);
   }
   catch(err) {
-    const html = nunjucks.render(`${TEMPLATES_PATH}index.njk`, {
+    const html = nunjucksEnv.render(`index.njk`, {
       error: true,
       errorReason: "WHY",
       REQUIRE_ACCESS_KEY
@@ -213,7 +217,7 @@ async function capture(request, reply) {
   // Check that there is still capture capacity (total)
   //
   if (CAPTURES_WATCH.currentTotal >= CAPTURES_WATCH.maxTotal) {
-    const html = nunjucks.render(`${TEMPLATES_PATH}index.njk`, {
+    const html = nunjucksEnv.render(`index.njk`, {
       error: true,
       errorReason: "TOO-MANY-CAPTURES-TOTAL",
       REQUIRE_ACCESS_KEY
@@ -229,7 +233,7 @@ async function capture(request, reply) {
   // Check that there is still capture capacity (for this IP)
   //
   if (CAPTURES_WATCH.currentByIp[ip] >= CAPTURES_WATCH.maxPerIp) {
-    const html = nunjucks.render(`${TEMPLATES_PATH}index.njk`, {
+    const html = nunjucksEnv.render(`index.njk`, {
       error: true,
       errorReason: "TOO-MANY-CAPTURES-USER",
       REQUIRE_ACCESS_KEY
@@ -281,7 +285,7 @@ async function capture(request, reply) {
   catch(err) {
     request.log.error(`Capture failed. ${err}`);
 
-    const html = nunjucks.render(`${TEMPLATES_PATH}index.njk`, {
+    const html = nunjucksEnv.render(`index.njk`, {
       error: true,
       errorReason: "CAPTURE-ISSUE",
       REQUIRE_ACCESS_KEY
@@ -312,7 +316,7 @@ async function capture(request, reply) {
  * @returns {Promise<fastify.FastifyReply>}
  */
  async function check(request, reply) {
-  const html = nunjucks.render(`${TEMPLATES_PATH}check.njk`, {
+  const html = nunjucksEnv.render(`check.njk`, {
     signingCertsHistory: CertsHistory.load("signing"),
     timestampsCertsHistory: CertsHistory.load("timestamping")
   });
