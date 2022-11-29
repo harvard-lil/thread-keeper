@@ -14,7 +14,7 @@ thread-keeper
     * [.EXECUTABLES_FOLDER](#module_const.EXECUTABLES_FOLDER)
     * [.STATIC_PATH](#module_const.STATIC_PATH)
     * [.MAX_PARALLEL_CAPTURES_TOTAL](#module_const.MAX_PARALLEL_CAPTURES_TOTAL)
-    * [.MAX_PARALLEL_CAPTURES_PER_ACCESS_KEY](#module_const.MAX_PARALLEL_CAPTURES_PER_ACCESS_KEY)
+    * [.MAX_PARALLEL_CAPTURES_PER_IP](#module_const.MAX_PARALLEL_CAPTURES_PER_IP)
     * [.APP_VERSION](#module_const.APP_VERSION)
 
 <a name="module_const.CERTS_PATH"></a>
@@ -59,10 +59,10 @@ Path to the "static" folder.
 Maximum capture processes that can be run in parallel.
 
 **Kind**: static constant of [<code>const</code>](#module_const)  
-<a name="module_const.MAX_PARALLEL_CAPTURES_PER_ACCESS_KEY"></a>
+<a name="module_const.MAX_PARALLEL_CAPTURES_PER_IP"></a>
 
-### const.MAX\_PARALLEL\_CAPTURES\_PER\_ACCESS\_KEY
-Maximum capture processes that can be run in parallel for a given key.
+### const.MAX\_PARALLEL\_CAPTURES\_PER\_IP
+Maximum capture processes that can be run in parallel for a IP address.
 
 **Kind**: static constant of [<code>const</code>](#module_const)  
 <a name="module_const.APP_VERSION"></a>

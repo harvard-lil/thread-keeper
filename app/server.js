@@ -8,14 +8,13 @@ import assert from "assert";
 
 import nunjucks from "nunjucks";
 
-import { AccessKeys, CertsHistory, SuccessLog, TwitterCapture } from "./utils/index.js";
+import { IPBlockList, CertsHistory, SuccessLog, TwitterCapture } from "./utils/index.js";
 import {
   TEMPLATES_PATH,
   STATIC_PATH,
   MAX_PARALLEL_CAPTURES_TOTAL,
-  MAX_PARALLEL_CAPTURES_PER_ACCESS_KEY,
+  MAX_PARALLEL_CAPTURES_PER_IP,
 } from "./const.js";
-
 
 /**
  * @type {SuccessLog}
@@ -23,9 +22,18 @@ import {
 export const successLog = new SuccessLog();
 
 /**
- * @type {AccessKeys}
+ * @type {IPBlockList}
  */
-const accessKeys = new AccessKeys();
+const ipBlockList = new IPBlockList();
+
+/**
+ * Fastify-cli options
+ * @constant
+ */
+export const options = {
+  trustProxy: true,
+  logger: true
+}
 
 /**
  * Keeps track of how many capture processes are currently running. 
@@ -36,15 +44,15 @@ const accessKeys = new AccessKeys();
  * @type {{
  *  currentTotal: number, 
  *  maxTotal: number, 
- *  currentByAccessKey: object.<string, number>, 
- *  maxPerAccessKey: number
+ *  currentByIp: object.<string, number>, 
+ *  maxPerIp: number
  * }}
  */
 export const CAPTURES_WATCH = {
   currentTotal: 0,
   maxTotal: MAX_PARALLEL_CAPTURES_TOTAL,
-  currentByAccessKey: {},
-  maxPerAccessKey: MAX_PARALLEL_CAPTURES_PER_ACCESS_KEY,
+  currentByIp: {},
+  maxPerIp: MAX_PARALLEL_CAPTURES_PER_IP,
 }
 
 export default async function (fastify, opts) {
@@ -67,10 +75,9 @@ export default async function (fastify, opts) {
   fastify.post('/', capture);
 
   fastify.get('/check', check);
-  
+
   fastify.get('/api/v1/hashes/check/:hash', checkHash);
 };
-
 
 /**
  * [GET] /
@@ -98,7 +105,6 @@ async function index(request, reply) {
  * Subject to captures rate limiting (see `CAPTURES_WATCH`). 
  * 
  * Body is expected as `application/x-www-form-urlencoded` with the following fields:
- * - access-key
  * - url
  * - unfold-thread (optional)
  * 
@@ -110,17 +116,18 @@ async function index(request, reply) {
  */
 async function capture(request, reply) {
   const data = request.body;
-  const accessKey = data["access-key"];
-  
+  const ip = request.ip;
+  let why = null;
+
   request.log.info(`Capture capacity: ${CAPTURES_WATCH.currentTotal} / ${CAPTURES_WATCH.maxTotal}.`);
-  
+
   //
-  // Check access key
+  // Check that IP is not in block list
   //
-  if (!accessKeys.check(accessKey)) {
+  if (ipBlockList.check(ip)) {
     const html = nunjucks.render(`${TEMPLATES_PATH}index.njk`, {
       error: true,
-      errorReason: "ACCESS-KEY"
+      errorReason: "IP"
     });
 
     return reply
@@ -149,6 +156,25 @@ async function capture(request, reply) {
   }
 
   //
+  // Check "why" field
+  //
+  try {
+    why = data.why.trim();
+    assert(why.length > 0);
+  }
+  catch(err) {
+    const html = nunjucks.render(`${TEMPLATES_PATH}index.njk`, {
+      error: true,
+      errorReason: "WHY"
+    });
+
+    return reply
+      .code(400)
+      .header('Content-Type', 'text/html; charset=utf-8')
+      .send(html);
+  }
+
+  //
   // Check that there is still capture capacity (total)
   //
   if (CAPTURES_WATCH.currentTotal >= CAPTURES_WATCH.maxTotal) {
@@ -164,9 +190,9 @@ async function capture(request, reply) {
   }
 
   //
-  // Check that there is still capture capacity (for this access key)
+  // Check that there is still capture capacity (for this IP)
   //
-  if (CAPTURES_WATCH.currentByAccessKey[accessKey] >= CAPTURES_WATCH.maxPerAccessKey) {
+  if (CAPTURES_WATCH.currentByIp[ip] >= CAPTURES_WATCH.maxPerIp) {
     const html = nunjucks.render(`${TEMPLATES_PATH}index.njk`, {
       error: true,
       errorReason: "TOO-MANY-CAPTURES-USER"
@@ -182,20 +208,20 @@ async function capture(request, reply) {
   // Process capture request
   //
   try {
-    // Add request to total and per-key counter
+    // Add request to total and per-IP counter
     CAPTURES_WATCH.currentTotal += 1;
 
-    if (accessKey in CAPTURES_WATCH.currentByAccessKey) {
-      CAPTURES_WATCH.currentByAccessKey[accessKey] += 1;
+    if (ip in CAPTURES_WATCH.currentByIp) {
+      CAPTURES_WATCH.currentByIp[ip] += 1;
     }
     else {
-      CAPTURES_WATCH.currentByAccessKey[accessKey] = 1;
+      CAPTURES_WATCH.currentByIp[ip] = 1;
     }
 
     const tweets = new TwitterCapture(data.url, {runBrowserBehaviors: "unfold-thread" in data});
     const pdf = await tweets.capture();
 
-    successLog.add(accessKey, pdf);
+    successLog.add(ip, why, pdf);
 
     // Generate a filename for the PDF based on url.
     // Example: harvardlil-status-123456789-2022-11-25.pdf
@@ -232,8 +258,8 @@ async function capture(request, reply) {
   finally {
     CAPTURES_WATCH.currentTotal -= 1;
 
-    if (accessKey && accessKey in CAPTURES_WATCH.currentByAccessKey) {
-      CAPTURES_WATCH.currentByAccessKey[data["access-key"]] -= 1;
+    if (ip && ip in CAPTURES_WATCH.currentByIp) {
+      CAPTURES_WATCH.currentByIp[ip] -= 1;
     }
   }
 }

@@ -7,15 +7,15 @@ const formSubmitDialog = document.querySelector("dialog#form-submit");
 document.querySelector("body#index form button").addEventListener("click", (e) => {
   e.preventDefault();
   const url = document.querySelector("body#index form input[name='url']");
-  const accessKey = document.querySelector("body#index form input[name='access-key']")
+  const why = document.querySelector("body#index form input[name='why']");
 
   if (!url.checkValidity()) {
     url.reportValidity();
     return;
   }
 
-  if (!accessKey.checkValidity()) {
-    accessKey.reportValidity();
+  if (!why.checkValidity()) {
+    why.reportValidity();
     return;
   }
 

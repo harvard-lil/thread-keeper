@@ -46,13 +46,13 @@ export const STATIC_PATH = `${process.env.PWD}/app/static/`;
  * Maximum capture processes that can be run in parallel.
  * @constant
  */
-export const MAX_PARALLEL_CAPTURES_TOTAL = 200;
+export const MAX_PARALLEL_CAPTURES_TOTAL = 50;
 
 /**
- * Maximum capture processes that can be run in parallel for a given key.
+ * Maximum capture processes that can be run in parallel for a IP address.
  * @constant
  */
-export const MAX_PARALLEL_CAPTURES_PER_ACCESS_KEY = 20;
+export const MAX_PARALLEL_CAPTURES_PER_IP = 2;
 
 /**
  * APP version. Pulled from `package.json` by default.

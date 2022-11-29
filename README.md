@@ -59,22 +59,6 @@ npm run generate-dev-cert # Will generate a certificate for self-signing PDFs. F
 npm run dev # Starts the development server on port 3000
 ```
 
-### Access keys
-Create an access key to test with:
-
-```bash
-$ uuidgen
-BB67BBC4-1F4B-4353-8E6D-9927A10F4509
-```
-
-And then add the key to `app/data/access-keys.json`:
-
-```json
-{
-  "BB67BBC4-1F4B-4353-8E6D-9927A10F4509": true
-}
-```
-
 ### Certificates history
 
 The _"Signatures Verification Page"_ page lists the certificates that were used for signing PDFs with the app. You may provide that history by creating two files under `/data`:

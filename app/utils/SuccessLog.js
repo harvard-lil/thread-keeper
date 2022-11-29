@@ -69,15 +69,25 @@ export class SuccessLog {
    * - Creates a success log entry
    * - Updates `this.#hashes` (so it doesn't need to reload from file)
    * 
-   * @param {string} accessKey 
+   * @param {string} ip 
+   * @param {string} why - Reason for creating this archive
    * @param {Buffer} pdfBytes - Used to store a SHA512 hash of the PDF that was delivered
    */
-  add(accessKey, pdfBytes) {
+  add(ip, why, pdfBytes) {
     // Calculate SHA512 hash of the PDF
     const hash = crypto.createHash('sha512').update(pdfBytes).digest('base64');
 
+    // "why" field sanitization
+    why = why
+      .replaceAll("\t", " ")
+      .replaceAll("\n", " ")
+      .replaceAll("<", "")
+      .replaceAll(">", "")
+      .replaceAll("{", "")
+      .replaceAll("}", "");
+
     // Save entry
-    const entry = `${new Date().toISOString()}\t${accessKey}\tsha512-${hash}\n`;
+    const entry = `${new Date().toISOString()}\t${ip}\t${why}\tsha512-${hash}\n`;
     fs.appendFileSync(SuccessLog.filepath, entry);
     this.#hashes[`sha512-${hash}`] = true;
   }
@@ -108,7 +118,7 @@ export class SuccessLog {
    * @returns {void}
    */
   reset() {
-    fs.writeFileSync(SuccessLog.filepath, "date-time\taccess-key\thash\n");
+    fs.writeFileSync(SuccessLog.filepath, "date-time\tip\twhy\thash\n");
     this.#hashes = {};
   }
 }

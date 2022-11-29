@@ -34,11 +34,8 @@
         </fieldset>
 
         <fieldset>
-          <label for="access-key">Access key <a href="https://ocb.to/archive-social-form" title="Access key request form">(request access)</a></label>
-          <input type="password" 
-                 name="access-key" 
-                 id="access-key"
-                 required>
+          <label for="why">Reason for archiving <a href="#who-can-use-it">(why this question?)</a></label>
+          <textarea required name="why" id="why" rows="2"></textarea>
         </fieldset>
           
         <fieldset class="submit">
@@ -66,11 +63,15 @@
       <dialog id="form-error" data-reason="{{ errorReason }}">
         <h2>Something went wrong</h2>
 
-        {% if errorReason and errorReason == "ACCESS-KEY" %}
-        <p>The access key provided is invalid or no longer active.</p>
+        {% if errorReason and errorReason == "IP" %}
+        <p>Your access to this service has been restricted.</p>
         {% endif %}
 
         {% if errorReason and errorReason == "URL" %}
+        <p>The url provided is not a valid twitter.com url.</p>
+        {% endif %}
+
+        {% if errorReason and errorReason == "WHY" %}
         <p>The url provided is not a valid twitter.com url.</p>
         {% endif %}
 
@@ -79,7 +80,7 @@
         {% endif %}
 
         {% if errorReason and errorReason == "TOO-MANY-CAPTURES-USER" %}
-        <p>Please wait until the capture requests you've started are completed before starting a new one.</p>
+        <p>Too many requests for your IP address. Please retry in a minute.</p>
         {% endif %}
 
         {% if errorReason and errorReason == "CAPTURE-ISSUE" %}
@@ -95,9 +96,9 @@
 
         <p>This site is an experiment by the <a href="https://lil.law.harvard.edu">Harvard Library Innovation Lab</a> to let you download signed PDFs of Twitter URLs. <a href="/static/example.pdf">Here's an example PDF</a> we made from <a href="https://twitter.com/doctorow/status/1591759999323492358">this tweet</a>.</p>
 
-        <h2>Who can use it?</h2>
+        <h2 id="who-can-use-it">Who can use it?</h2>
 
-        <p>To use our website <a href="https://ocb.to/archive-social-form">you'll need to contact us</a> for an API key. We're currently only able to share a limited number with people like journalists, internet scholars, and archivists. But you can also use <a href="https://github.com/harvard-lil/thread-keeper">our open source software</a> to stand up an archive server of your own, and share it with your friends.</p>
+        <p>While anyone can use this website, it is experimental and running with limited server capacity. But you can also use <a href="https://github.com/harvard-lil/thread-keeper">our open source software</a> to stand up an archive server of your own, and share it with your friends.</p>
 
         <h2>Why make a PDF archiving tool for Twitter?</h2>
 

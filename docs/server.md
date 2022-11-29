@@ -9,9 +9,10 @@ thread-keeper
 * [server](#module_server)
     * _static_
         * [.successLog](#module_server.successLog) : <code>SuccessLog</code>
+        * [.options](#module_server.options)
         * [.CAPTURES_WATCH](#module_server.CAPTURES_WATCH) : <code>Object</code>
     * _inner_
-        * [~accessKeys](#module_server..accessKeys) : <code>AccessKeys</code>
+        * [~ipBlockList](#module_server..ipBlockList) : <code>IPBlockList</code>
         * [~index(request, reply)](#module_server..index) ⇒ <code>Promise.&lt;fastify.FastifyReply&gt;</code>
         * [~capture(request, reply)](#module_server..capture) ⇒ <code>Promise.&lt;fastify.FastifyReply&gt;</code>
         * [~check(request, reply)](#module_server..check) ⇒ <code>Promise.&lt;fastify.FastifyReply&gt;</code>
@@ -20,6 +21,12 @@ thread-keeper
 <a name="module_server.successLog"></a>
 
 ### server.successLog : <code>SuccessLog</code>
+**Kind**: static constant of [<code>server</code>](#module_server)  
+<a name="module_server.options"></a>
+
+### server.options
+Fastify-cli options
+
 **Kind**: static constant of [<code>server</code>](#module_server)  
 <a name="module_server.CAPTURES_WATCH"></a>
 
@@ -30,9 +37,9 @@ May be used to redirect users if over capacity.
 [!] Only good for early prototyping.
 
 **Kind**: static constant of [<code>server</code>](#module_server)  
-<a name="module_server..accessKeys"></a>
+<a name="module_server..ipBlockList"></a>
 
-### server~accessKeys : <code>AccessKeys</code>
+### server~ipBlockList : <code>IPBlockList</code>
 **Kind**: inner constant of [<code>server</code>](#module_server)  
 <a name="module_server..index"></a>
 
@@ -58,7 +65,6 @@ Returns to form with specific error code, passed as `errorReason`, otherwise.
 Subject to captures rate limiting (see `CAPTURES_WATCH`). 
 
 Body is expected as `application/x-www-form-urlencoded` with the following fields:
-- access-key
 - url
 - unfold-thread (optional)
 

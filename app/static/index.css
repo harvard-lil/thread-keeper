@@ -266,7 +266,7 @@ body#index > main form label {
   padding-bottom: 0.25rem;
 }
 
-body#index > main form input {
+body#index > main form input,  body#index > main form textarea {
   display: block;
   width: 100%;
   padding: 0.5rem;

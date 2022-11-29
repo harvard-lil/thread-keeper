@@ -4,7 +4,6 @@
  * @author The Harvard Library Innovation Lab
  * @license MIT
  */
-import fs from "fs";
 import assert from "assert";
 import crypto from "crypto";
 
@@ -12,31 +11,18 @@ import { test } from "tap";
 import Fastify from "fastify";
 import isHtml from "is-html";
 
-import { AccessKeys } from "./utils/index.js";
-
 import server, { CAPTURES_WATCH, successLog } from "./server.js";
 import { DATA_PATH, CERTS_PATH } from "./const.js";
-
-/**
- * Access keys fixture.
- * @type {{active: string[], inactive: string[]}}
- */
-const ACCESS_KEYS = (() => {
-  const rawAccessKeys = JSON.parse(fs.readFileSync(AccessKeys.filepath));
-
-  const out = { active: [], inactive: [] };
-
-  for (let [key, value] of Object.entries(rawAccessKeys)) {
-    value === true ? out.active.push(key) : out.inactive.push(key);
-  }
-
-  return out;
-})();
 
 /**
  * Dummy url of a thread to capture.
  */
 const THREAD_URL = "https://twitter.com/HarvardLIL/status/1595150565428039680";
+
+/**
+ * Dummy reason for capture
+ */
+const WHY = "Testing thread-keeper";
 
 test("Integration tests for server.js", async(t) => {
 
@@ -64,36 +50,42 @@ test("Integration tests for server.js", async(t) => {
     t.type(isHtml(response.body), true, "Server serves HTML.");
   });
 
-  test("[POST] / returns HTTP 401 + HTML on failed access key check.", async (t) => {
+  test("[POST] / returns HTTP 401 + HTML on blocked IP check.", async (t) => {
     const app = Fastify({logger: false});
     await server(app, {});
 
-    const scenarios = [
-      "FOO-BAR", // Invalid key
-      ACCESS_KEYS.inactive[0], // Inactive key
-      null // No key
-    ]
+    const params = new URLSearchParams();
+    params.append("url", THREAD_URL);
 
-    for (const accessKey of scenarios) {
-      const params = new URLSearchParams();
+    const response = await app.inject({
+      method: "POST",
+      url: "/",
+      remoteAddress: "1.2.3.4",
+      headers: { 
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: params.toString() 
+    });
 
-      if (accessKey) {
-        params.append("access-key", accessKey);
-      }
+    t.equal(response.statusCode, 401, "Server returns HTTP 401.");
 
-      const response = await app.inject({
-        method: "POST",
-        url: "/",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: params.toString(),
-      });
+    const body = `${response.body}`;
+    t.type(isHtml(body), true, "Server serves HTML");
+    t.equal(body.includes(`data-reason="IP"`), true, "With error message.");
+  });
 
-      t.equal(response.statusCode, 401, "Server returns HTTP 401.");
+  test("[POST] / lets IPs that are no longer blocked make requests.", async (t) => {
+    const app = Fastify({logger: false});
+    await server(app, {});
 
-      const body = `${response.body}`;
-      t.type(isHtml(body), true, "Server serves HTML");
-      t.equal(body.includes(`data-reason="ACCESS-KEY"`), true, "With error message.");
-    }
+    const response = await app.inject({
+      method: "POST",
+      url: "/",
+      remoteAddress: "4.3.2.1",
+    });
+
+    // Should fail because no URL were passed, not because IP was blocked
+    t.equal(response.statusCode, 400, "Server returns HTTP 400.");
   });
 
   test("[POST] / returns HTTP 400 + HTML on failed url check.", async (t) => {
@@ -110,8 +102,6 @@ test("Integration tests for server.js", async(t) => {
     for (const url of scenarios) {
       const params = new URLSearchParams();
 
-      params.append("access-key", ACCESS_KEYS.active[0]);
-
       if (url) {
         params.append("url", url);
       }
@@ -123,11 +113,45 @@ test("Integration tests for server.js", async(t) => {
         body: params.toString(),
       });
     
-      t.equal(response.statusCode, 400, "Server returns HTTP 401.");
+      t.equal(response.statusCode, 400, "Server returns HTTP 400.");
       
       const body = `${response.body}`;
       t.type(isHtml(body), true, "Server serves HTML");
       t.equal(body.includes(`data-reason="URL"`), true, "With error message.");
+    }
+  });
+
+  test("[POST] / returns HTTP 400 + HTML on failed \"why\" check.", async (t) => {
+    const app = Fastify({logger: false});
+    await server(app, {});
+
+    const scenarios = [
+      null, // Nothing
+      " ", // Empty
+      "",
+    ]
+
+    for (const why of scenarios) {
+      const params = new URLSearchParams();
+
+      params.append("url", THREAD_URL);
+
+      if (why) {
+        params.append("why", why);
+      }
+
+      const response = await app.inject({
+        method: "POST",
+        url: "/",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: params.toString(),
+      });
+    
+      t.equal(response.statusCode, 400, "Server returns HTTP 400.");
+      
+      const body = `${response.body}`;
+      t.type(isHtml(body), true, "Server serves HTML");
+      t.equal(body.includes(`data-reason="WHY"`), true, "With error message.");
     }
   });
 
@@ -138,8 +162,8 @@ test("Integration tests for server.js", async(t) => {
     CAPTURES_WATCH.currentTotal = CAPTURES_WATCH.maxTotal; // Simulate peak
 
     const params = new URLSearchParams();
-    params.append("access-key", ACCESS_KEYS.active[0]);
     params.append("url", THREAD_URL);
+    params.append("why", WHY);
 
     const response = await app.inject({
       method: "POST",
@@ -161,19 +185,18 @@ test("Integration tests for server.js", async(t) => {
     const app = Fastify({logger: false});
     await server(app, {});
 
-    const userKey = ACCESS_KEYS.active[0];
-
-    CAPTURES_WATCH.currentByAccessKey[userKey] = CAPTURES_WATCH.maxPerAccessKey;
+    const userIp = "127.0.0.1";
+    CAPTURES_WATCH.currentByIp[userIp] = CAPTURES_WATCH.maxPerIp;
 
     const params = new URLSearchParams();
-    params.append("access-key", userKey);
     params.append("url", THREAD_URL);
+    params.append("why", WHY);
 
     const response = await app.inject({
       method: "POST",
       url: "/",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: params.toString(),
+      body: params.toString()
     });
     
     t.equal(response.statusCode, 429, "Server returns HTTP 503.");
@@ -182,7 +205,7 @@ test("Integration tests for server.js", async(t) => {
     t.type(isHtml(body), true, "Server serves HTML");
     t.equal(body.includes(`TOO-MANY-CAPTURES-USER`), true, "With error message.");
 
-    delete CAPTURES_WATCH.currentByAccessKey[userKey];
+    delete CAPTURES_WATCH.currentByIp[userIp];
   });
 
   test("[POST] / returns HTTP 200 + PDF", async (t) => {
@@ -190,8 +213,8 @@ test("Integration tests for server.js", async(t) => {
     await server(app, {});
 
     const params = new URLSearchParams();
-    params.append("access-key", ACCESS_KEYS.active[0]);
     params.append("url", THREAD_URL);
+    params.append("why", WHY);
     params.append("unfold-thread", "on");
 
     const response = await app.inject({
@@ -246,7 +269,7 @@ test("Integration tests for server.js", async(t) => {
     // Add entry to success logs
     const toHash = Buffer.from(`${Date.now()}`);
     const hash = crypto.createHash('sha512').update(toHash).digest('base64');
-    successLog.add(ACCESS_KEYS.active[0], toHash);
+    successLog.add("127.0.0.1", WHY, toHash);
 
     const response = await app.inject({
       method: "GET",
