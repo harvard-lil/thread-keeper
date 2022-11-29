@@ -70,7 +70,7 @@ export class SuccessLog {
    * - Updates `this.#hashes` (so it doesn't need to reload from file)
    * 
    * @param {string} identifier - Can be an IP or access key 
-   * @param {string} why - Reason for creating this archive
+   * @param {string} why - Reason for creating this archive (500 chars max).
    * @param {Buffer} pdfBytes - Used to store a SHA512 hash of the PDF that was delivered
    */
   add(identifier, why, pdfBytes) {
@@ -85,6 +85,8 @@ export class SuccessLog {
       .replaceAll(">", "")
       .replaceAll("{", "")
       .replaceAll("}", "");
+
+    why = why.substring(0, 500);
 
     // Save entry
     const entry = `${new Date().toISOString()}\t${identifier}\t${why}\tsha512-${hash}\n`;

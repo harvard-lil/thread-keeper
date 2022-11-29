@@ -53,7 +53,7 @@ Calculates hash of a PDF an:
 | Param | Type | Description |
 | --- | --- | --- |
 | identifier | <code>string</code> | Can be an IP or access key |
-| why | <code>string</code> | Reason for creating this archive |
+| why | <code>string</code> | Reason for creating this archive (500 chars max). |
 | pdfBytes | <code>Buffer</code> | Used to store a SHA512 hash of the PDF that was delivered |
 
 <a name="utils.module_SuccessLog.SuccessLog+findHashInLogs"></a>
