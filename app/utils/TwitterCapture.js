@@ -10,7 +10,7 @@ import { chromium } from "playwright";
 
 import { v4 as uuidv4 } from "uuid";
 import { PDFDocument } from "pdf-lib";
-import nunjucks from "nunjucks";
+import glob from "glob";
 
 import { CERTS_PATH, TMP_PATH, EXECUTABLES_FOLDER, TEMPLATES_PATH, APP_VERSION } from "../const.js";
 
@@ -512,13 +512,13 @@ export class TwitterCapture {
   }
 
   /**
-   * Tries to capture main video from current Twitter url and add it as attachment to the PDF.
+   * Tries to capture video(s) from current Twitter url and add them as attachment to the PDF.
    * @param {PDFDocument} - Editable PDF object from `pdf-lib`.
    * @returns {Promise<void>}
    */
   captureAndAddVideoToPDF = async(editablePDF) => {
     const id = uuidv4();
-    const filepathOut = `${this.options.tmpFolderPath}${id}.mp4`;
+    const filepathOut = `${this.options.tmpFolderPath}${id}-%(autonumber)d.mp4`;
     const ytDlpExecutable = this.options.ytDlpPath;
 
     // yt-dlp health check
@@ -559,21 +559,28 @@ export class TwitterCapture {
       if (result.status !== 0) {
         throw new Error(result.stderr);
       }
-  
-      const video = fs.readFileSync(filepathOut);
+      
+      const videos = glob.sync(filepathOut.replace("%(autonumber)d", "*"))
 
-      if (!video) {
+      if (!videos) {
         return;
       }
+
+      let i = 1;
+      for (const file of videos) {
+        const video = fs.readFileSync(file);
   
-      await editablePDF.attach(video.buffer, "video.mp4", {
-        mimeType: 'video/mp4',
-        description: `Video captured from ${this.url}`,
-        creationDate: new Date(),
-        modificationDate: new Date(),
-      });
-  
-      fs.unlink(filepathOut, () => {});
+        await editablePDF.attach(video.buffer, `video-${i}.mp4`, {
+          mimeType: 'video/mp4',
+          description: `Video captured from ${this.url}`,
+          creationDate: new Date(),
+          modificationDate: new Date(),
+        });
+
+        i++;
+    
+        fs.unlink(file, () => {});
+      }
     }
     catch(err) { }
   }
