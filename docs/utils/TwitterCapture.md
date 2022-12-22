@@ -223,7 +223,7 @@ Playwright needs to be ready.
 <a name="utils.module_TwitterCapture.TwitterCapture+captureAndAddVideoToPDF"></a>
 
 #### twitterCapture.captureAndAddVideoToPDF ⇒ <code>Promise.&lt;void&gt;</code>
-Tries to capture main video from current Twitter url and add it as attachment to the PDF.
+Tries to capture video(s) from current Twitter url and add them as attachment to the PDF.
 
 **Kind**: instance property of [<code>TwitterCapture</code>](#utils.module_TwitterCapture.TwitterCapture)  
 
