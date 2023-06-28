@@ -50,8 +50,10 @@
 
     const filepath = type === "signing" ? CertsHistory.signingFilepath : CertsHistory.timestampingFilepath;
 
-    if (!fs.readFileSync(filepath)) {
-      fs.writeFileSync(filepath, "{}");
+    try {
+      fs.readFileSync(filepath)
+    } catch (err) {
+      fs.writeFileSync(filepath, "{}")
     }
 
     return JSON.parse(fs.readFileSync(filepath));
