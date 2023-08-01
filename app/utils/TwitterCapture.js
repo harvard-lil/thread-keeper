@@ -10,7 +10,7 @@ import { chromium } from "playwright";
 
 import { v4 as uuidv4 } from "uuid";
 import { PDFDocument } from "pdf-lib";
-import glob from "glob";
+import { globSync } from "glob";
 
 import { CERTS_PATH, TMP_PATH, EXECUTABLES_FOLDER, TEMPLATES_PATH, APP_VERSION } from "../const.js";
 
@@ -560,7 +560,7 @@ export class TwitterCapture {
         throw new Error(result.stderr);
       }
       
-      const videos = glob.sync(filepathOut.replace("%(autonumber)d", "*"))
+      const videos = globSync(filepathOut.replace("%(autonumber)d", "*"))
 
       if (!videos) {
         return;
