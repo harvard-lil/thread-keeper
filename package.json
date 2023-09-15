@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@fastify/formbody": "^7.3.0",
-    "@fastify/static": "^6.11.0",
+    "@fastify/static": "^6.11.1",
     "abort-controller": "^3.0.0",
     "abstract-logging": "^2.0.1",
     "ajv": "^8.11.2",
