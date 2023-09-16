@@ -50,7 +50,7 @@
     "nunjucks": "^3.2.3",
     "on-exit-leak-free": "^2.1.0",
     "pdf-lib": "^1.17.1",
-    "pino": "^8.15.0",
+    "pino": "^8.15.1",
     "pino-abstract-transport": "^1.1.0",
     "pino-std-serializers": "^6.2.2",
     "playwright": "^1.37.1",
