@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@fastify/formbody": "^7.3.0",
-    "@fastify/static": "^6.11.0",
+    "@fastify/static": "^6.11.1",
     "abort-controller": "^3.0.0",
     "abstract-logging": "^2.0.1",
     "ajv": "^8.11.2",
@@ -34,7 +34,7 @@
     "fast-querystring": "^1.0.0",
     "fast-redact": "^3.3.0",
     "fast-uri": "^2.1.0",
-    "fastify": "^4.22.2",
+    "fastify": "^4.23.0",
     "fastify-cli": "^5.8.0",
     "fastq": "^1.13.0",
     "find-my-way": "^7.3.1",
