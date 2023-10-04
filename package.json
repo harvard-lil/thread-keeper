@@ -91,6 +91,6 @@
   "devDependencies": {
     "is-html": "^3.0.0",
     "pino-pretty": "^10.2.2",
-    "tap": "^16.3.8"
+    "tap": "^18.4.2"
   }
 }
