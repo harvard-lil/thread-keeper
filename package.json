@@ -39,7 +39,7 @@
     "fastq": "^1.13.0",
     "find-my-way": "^7.3.1",
     "forwarded": "^0.2.0",
-    "glob": "^10.3.7",
+    "glob": "^10.3.10",
     "ieee754": "^1.2.1",
     "ipaddr.js": "^2.1.0",
     "jsdoc-to-markdown": "^8.0.0",
@@ -48,9 +48,9 @@
     "lru-cache": "^10.0.1",
     "ms": "^2.1.2",
     "nunjucks": "^3.2.3",
-    "on-exit-leak-free": "^2.1.0",
+    "on-exit-leak-free": "^2.1.2",
     "pdf-lib": "^1.17.1",
-    "pino": "^8.15.1",
+    "pino": "^8.15.4",
     "pino-abstract-transport": "^1.1.0",
     "pino-std-serializers": "^6.2.2",
     "playwright": "^1.38.1",
@@ -70,10 +70,10 @@
     "secure-json-parse": "^2.5.0",
     "semver": "^7.3.8",
     "set-cookie-parser": "^2.5.1",
-    "sonic-boom": "^3.2.0",
+    "sonic-boom": "^3.5.0",
     "split2": "^4.1.0",
     "thread-stream": "^2.4.0",
-    "tiny-lru": "^11.1.2",
+    "tiny-lru": "^11.2.0",
     "uri-js": "^4.4.1",
     "uuid": "^9.0.1",
     "yallist": "^4.0.0"
@@ -90,7 +90,7 @@
   "homepage": "https://github.com/harvard-lil/thread-keeper#readme",
   "devDependencies": {
     "is-html": "^3.0.0",
-    "pino-pretty": "^10.2.0",
+    "pino-pretty": "^10.2.2",
     "tap": "^16.3.8"
   }
 }
