@@ -70,7 +70,7 @@
     "secure-json-parse": "^2.5.0",
     "semver": "^7.3.8",
     "set-cookie-parser": "^2.5.1",
-    "sonic-boom": "^3.4.0",
+    "sonic-boom": "^3.5.0",
     "split2": "^4.1.0",
     "thread-stream": "^2.4.0",
     "tiny-lru": "^11.2.0",
