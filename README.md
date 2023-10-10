@@ -164,5 +164,4 @@ $ uuidgen
 BB67BBC4-1F4B-4353-8E6D-9927A10F4509
 ```
 
-
 [☝️ Back to summary](#summary)
