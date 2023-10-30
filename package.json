@@ -73,7 +73,7 @@
     "sonic-boom": "^3.5.0",
     "split2": "^4.1.0",
     "thread-stream": "^2.4.1",
-    "tiny-lru": "^11.2.3",
+    "tiny-lru": "^11.2.5",
     "uri-js": "^4.4.1",
     "uuid": "^9.0.1",
     "yallist": "^4.0.0"
