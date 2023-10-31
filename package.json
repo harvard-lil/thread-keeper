@@ -33,7 +33,7 @@
     "fast-json-stringify": "^5.8.0",
     "fast-querystring": "^1.0.0",
     "fast-redact": "^3.3.0",
-    "fast-uri": "^2.1.0",
+    "fast-uri": "^2.3.0",
     "fastify": "^4.24.3",
     "fastify-cli": "^5.8.0",
     "fastq": "^1.13.0",
