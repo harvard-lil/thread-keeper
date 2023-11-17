@@ -24,7 +24,7 @@
     "avvio": "^8.2.0",
     "base64-js": "^1.5.1",
     "buffer": "^6.0.3",
-    "cookie": "^0.5.0",
+    "cookie": "^0.6.0",
     "debug": "^4.3.4",
     "event-target-shim": "^6.0.2",
     "events": "^3.3.0",
