@@ -45,7 +45,7 @@
     "jsdoc-to-markdown": "^8.0.0",
     "json-schema-traverse": "^1.0.0",
     "light-my-request": "^5.11.0",
-    "lru-cache": "^10.0.2",
+    "lru-cache": "^10.0.3",
     "ms": "^2.1.2",
     "nunjucks": "^3.2.3",
     "on-exit-leak-free": "^2.1.2",
